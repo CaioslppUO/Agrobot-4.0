@@ -6,12 +6,10 @@ s.bind(('localhost', 3000))
 s.listen(1)
 
 conn, addr = s.accept()
-while True:
-    data = conn.recv(10000)
-    if not data:
-        break
-    print(str(data.decode("utf-8")))
-    conn.send("Teste de envio a partir do servidor em python3.".encode("utf-8"))
+
+data = conn.recv(10000)
+print(str(data.decode("utf-8")))
+conn.send("Teste de envio a partir do servidor em python3.".encode("utf-8"))
 
 
 conn.close()

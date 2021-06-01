@@ -1,3 +1,0 @@
-#!/bin/zsh
-BASEDIR=$(dirname "$0")
-source $BASEDIR/../agrobot_env/bin/activate

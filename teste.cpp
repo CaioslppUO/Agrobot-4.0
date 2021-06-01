@@ -7,6 +7,5 @@ int main() {
     Client::emit("Mensagem de Teste.");
     char Teste[10000];
     Client::receive(Teste);
-    cout << Teste << endl;
     return 0;
 }

@@ -45,6 +45,6 @@ namespace Client {
 
     void receive(char * msg) {
         read(sock, msg, 10000);
-        printf(msg);
+        std::cout << msg << std::endl;
     }
 }
