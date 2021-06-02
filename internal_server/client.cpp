@@ -1,3 +1,6 @@
+#ifndef CLIENT_CPP
+#define CLIENT_CPP
+
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
@@ -34,16 +37,11 @@ namespace Client {
     */
     void emit(char * msg) {
         int msg_size = strlen(msg),i,j;
-        char aux[8];
+        char aux[1];
         if(msg_size > BUFFER_SIZE) throw "buffer overflow";
-        for(i=j=0; i < msg_size; i++,j++) { // Send 8 by 8 characters.
-            aux[j] = msg[i];
-            if(j == 7 || i+1 == msg_size) {
-                send(sock, aux, sizeof(aux), 0);
-                j = 0;
-                aux[0] = 0; aux[1] = 0; aux[2] = 0; aux[3] = 0;
-                aux[4] = 0; aux[5] = 0; aux[6] = 0; aux[7] = 0;
-            }
+        for(i = 0; i < msg_size; i++) {
+            aux[0] = msg[i];
+            send(sock, aux, sizeof(aux), 0);
         }
     }
 
@@ -54,4 +52,12 @@ namespace Client {
         read(sock, msg, BUFFER_SIZE);
         return msg;
     }
+
+    /* End the socket connection.
+    */
+    void closeConnection() {
+        close(sock);
+    }
 }
+
+#endif
