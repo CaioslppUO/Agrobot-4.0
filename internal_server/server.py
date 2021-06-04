@@ -61,11 +61,23 @@ def receive():
         if str(data.decode("utf-8"))!="":
             process(str(data.decode("utf-8")))
 
+def send(msg: str):
+    msg+="\0"
+    conn.send(msg.encode('utf-8'))
+
+def aux():
+    while True:
+        au = input('Digite algo para enviar: ')
+        send(au)
+
+s = connect('localhost',3000)
+conn, addr = wait_for_connection(s)
+
 try:
-    s = connect('localhost',3000)
-    conn, addr = wait_for_connection(s)
     t_recieve = threading.Thread(target=receive, args=())
     t_recieve.start()
+    aux()
 except Exception as e:
     conn.close()
     print(str(e))
+
