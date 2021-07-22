@@ -22,7 +22,6 @@ mkdir $AGROBOT_ENV
 # Virtual Env
 python3 -m venv $AGROBOT_ENV/
 
-
 # Post install
 clear
 echo DONE
