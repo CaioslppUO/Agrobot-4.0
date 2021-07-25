@@ -29,7 +29,14 @@ mkdir $AGROBOT_ENV
 mkdir -p $CATKIN/src/
 
 # Virtual Env
-python3 -m venv $AGROBOT_ENV/ 
+python3 -m venv $AGROBOT_ENV/
+source "$AGROBOT_ENV_BIN/activate"
+packages=$(cat "$LOCAL_FOLDER/req")
+for package in $packages
+do
+    pip3 install $package
+done
+deactivate
 echo "source /opt/ros/noetic/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate
 echo "source /opt/ros/noetic/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate
 echo "alias agrobot=exit" >> $AGROBOT_ENV_BIN/activate
@@ -57,7 +64,6 @@ cd $CATKIN && catkin_make
 cd "$LOCAL_FOLDER/../scripts/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 
 ## Roslaunch
-
 cd $AGROBOT
 mkdir launch && cd launch
 echo "<launch>" > run.launch
