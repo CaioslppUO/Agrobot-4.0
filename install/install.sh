@@ -69,10 +69,15 @@ cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 mkdir $AGROBOT_SERVICES
 cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
 
+## Server for communication with app
+cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT"
+cd "$AGROBOT/server" && yarn install
+
 ## Roslaunch
 cd $AGROBOT
 mkdir launch && cd launch
 echo "<launch>" > run.launch
+    echo "    <node pkg='agrobot' type='start_server.py' name='start_server' output='screen'/>" >> run.launch
 files=$(ls $LOCAL_FOLDER/../core)
 for entry in $files
 do
