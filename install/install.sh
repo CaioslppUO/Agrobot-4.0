@@ -14,6 +14,8 @@ BASHRC=$HOME/.bashrc
 ZSHRC=$HOME/.zshrc
 AGROBOT_FOLDER=$HOME/Agrobot
 AGROBOT_ENV=$AGROBOT_FOLDER/agrobot_env
+VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/python3.8/site-packages
+AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot
 AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
 CATKIN=$AGROBOT_FOLDER/catkin_ws
 CATKIN_SRC=$CATKIN/src
@@ -60,14 +62,18 @@ echo "source $CATKIN_DEVEL/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate
 cd $CATKIN_SRC && catkin_create_pkg agrobot std_msgs rospy roscpp message_generation message_runtime
 cd $CATKIN && catkin_make
 
-## Scripts
-cd "$LOCAL_FOLDER/../scripts/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
+## Core scripts
+cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
+
+## Services
+mkdir $AGROBOT_SERVICES
+cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
 
 ## Roslaunch
 cd $AGROBOT
 mkdir launch && cd launch
 echo "<launch>" > run.launch
-files=$(ls $LOCAL_FOLDER/../scripts)
+files=$(ls $LOCAL_FOLDER/../core)
 for entry in $files
 do
     name=$(echo "$entry" | cut -f 1 -d '.')
