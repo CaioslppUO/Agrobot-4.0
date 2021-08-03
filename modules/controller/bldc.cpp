@@ -2,25 +2,25 @@
 	Copyright 2017 Ryan Owens
 
 	This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+		This program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    */
+		You should have received a copy of the GNU General Public License
+		along with this program.  If not, see <http://www.gnu.org/licenses/>.
+		*/
 
-/*
- * bldc.cpp
- *
- *  Created on: 19 mar 2017
- *      Author: Ryan
- */
+		/*
+		 * bldc.cpp
+		 *
+		 *  Created on: 19 mar 2017
+		 *      Author: Ryan
+		 */
 #include "bldc.h"
 #include "comm_uart.h"
 #include "bldc_interface.h"
@@ -29,25 +29,25 @@
 #include <stdio.h>
 #include <vector> // for read data state machine
 
-// Create new timer for reading data
+		 // Create new timer for reading data
 
-// Constant declarations
+		 // Constant declarations
 const int timerSP = 20; // timer set-point in milliseconds.
-	                    // adjust for frequency of read data.
-	                    // setting too low may cause packets to be dropped.
-                        // 10ms is the lowest I have observed to work
-                        // reliably on beaglebone black.
+											// adjust for frequency of read data.
+											// setting too low may cause packets to be dropped.
+												// 10ms is the lowest I have observed to work
+												// reliably on beaglebone black.
 const RxData zeroRxData = {}; // rxData = 0
 
 // global variables
 static std::vector<RxMotor> motorList; // dynamic list to receive and store motor data
 static std::vector<RxMotor>::iterator it; // iterator for motorList
-static enum {REQUEST, READ} readMode = REQUEST; // data sampling state-machine
+static enum { REQUEST, READ } readMode = REQUEST; // data sampling state-machine
 
 // Rx values and position callback functions
 // BLDC interface will call these functions implicitly
 // whenever the appropriate packet is received
-static void bldc_val_received(mc_values *val);
+static void bldc_val_received(mc_values* val);
 static void bldc_pos_received(float pos); // should work after VESC firmware mod
 
 //********************************************************************************
@@ -65,7 +65,7 @@ void bldc_pos_received(float pos) {
 // Post: Motor data is stored in global Serial Rx buffer and
 //       flag has been set indicating that data is available in buffer.
 //********************************************************************************
-void bldc_val_received(mc_values *val) {
+void bldc_val_received(mc_values* val) {
 	// set current iteration of motorList rxData from serial data
 	it->rxData.voltageIn = val->v_in;
 	it->rxData.tempPCB = val->temp_pcb;
@@ -94,7 +94,7 @@ void bldc_val_received(mc_values *val) {
 //********************************************************************************
 void BLDC::init(char* serialPort) {
 	// Initialize Serial
-    comm_uart_init(serialPort);
+	comm_uart_init(serialPort);
 	// Set rx data callback functions
 	bldc_interface_set_rx_value_func(bldc_val_received);
 	// Won't work unless VESC firmware modified
@@ -127,11 +127,11 @@ bool BLDC::sample_Data() {
 	// Therefore, a timer based state-machine approach is used to guarantee that 
 	// all of the requested data is available before attempting to read, and then
 	// moving on to the next VESC.
-	switch(readMode) {
-		case REQUEST:
-			request_Values(it->canId); // Send the serial command requesting data from VESC
-			readMode = READ;
-			break;
+	switch (readMode) {
+	case REQUEST:
+		request_Values(it->canId); // Send the serial command requesting data from VESC
+		readMode = READ;
+		break;
 	}
 	return ret;
 }
@@ -140,7 +140,7 @@ bool BLDC::sample_Data() {
 // Post: Motor object instantiated with ID, zero rxData, and motor config.
 //********************************************************************************
 BLDC::BLDC(VescID vescID, Motor_Config motorConfig) : id(vescID), config(motorConfig) {
-	RxMotor init = {vescID, zeroRxData};
+	RxMotor init = { vescID, zeroRxData };
 	dataPos = motorList.size(); // store position in motorList to use for accessing data
 	motorList.push_back(init); // add to motorList with vesc ID and zero data
 	it = motorList.begin(); // reset the motorList iterator to beginning
@@ -154,89 +154,89 @@ BLDC::~BLDC() {
 // Post: Speed of motor has been set in RPM.
 //********************************************************************************
 void BLDC::set_Speed(int rpm) {
-    // brake if value is within neutral range
-    if (rpm > -1*config.Min_Erpm && rpm < config.Min_Erpm) {
+	// brake if value is within neutral range
+	if (rpm > -1 * config.Min_Erpm && rpm < config.Min_Erpm) {
 		// apply brake if braking enabled
 		if (config.enable_brake) {
 			bldc_interface_set_forward_can(id);
-        	apply_Brake(config.Brake_Current);
-        	return;
+			apply_Brake(config.Brake_Current);
+			return;
 		}
 		else
 			rpm = 0;
 	}
-    // set controller id and send the packet
-    bldc_interface_set_forward_can(id);
-    bldc_interface_set_rpm(rpm);
+	// set controller id and send the packet
+	bldc_interface_set_forward_can(id);
+	bldc_interface_set_rpm(rpm);
 }
 //********************************************************************************
 // Pre: Serial port is initialized. Unscaled Analog/Digital value is input.
 // Post: Speed of motor has been set in RPM.
 //********************************************************************************
 void BLDC::set_Speed_Unscaled(float val) {
-    int rpm;
-    // scale val to rpm value
-    rpm = scale_To_Int(val, -1*config.Max_Erpm, config.Max_Erpm);
-    set_Speed(rpm);
+	int rpm;
+	// scale val to rpm value
+	rpm = scale_To_Int(val, -1 * config.Max_Erpm, config.Max_Erpm);
+	set_Speed(rpm);
 }
 //********************************************************************************
 // Pre: Serial port is initialized. Value in amps is input.
 // Post: Current of motor has been set in Amps.
 //********************************************************************************
 void BLDC::set_Current(float amps) {
-    // brake if value is within neutral range
-    if (amps > -1*config.Min_Amps && amps < config.Min_Amps) {
+	// brake if value is within neutral range
+	if (amps > -1 * config.Min_Amps && amps < config.Min_Amps) {
 		// apply brake if braking enabled
 		if (config.enable_brake) {
 			bldc_interface_set_forward_can(id);
-        	apply_Brake(config.Brake_Current);
-        	return;
+			apply_Brake(config.Brake_Current);
+			return;
 		}
 		else
 			amps = 0;
 	}
-    // set controller id and send the packet
-    bldc_interface_set_forward_can(id);
-    bldc_interface_set_current(amps);
+	// set controller id and send the packet
+	bldc_interface_set_forward_can(id);
+	bldc_interface_set_current(amps);
 }
 //********************************************************************************
 // Pre: Serial port is initialized. Unscaled Analog/Digital value is input.
 // Post: Current of motor has been set in Amps.
 //********************************************************************************
 void BLDC::set_Current_Unscaled(float val) {
-    float amps;
-    // scale val to current value
-    amps = scale_To_Float(val, -1*config.Max_Amps, config.Max_Amps);
-    set_Current(amps);
+	float amps;
+	// scale val to current value
+	amps = scale_To_Float(val, -1 * config.Max_Amps, config.Max_Amps);
+	set_Current(amps);
 }
 //********************************************************************************
 // Pre: Serial port is initialized. Brake current in amps is input.
 // Post: Braking has been applied to motor with given current.
 //********************************************************************************
 void BLDC::apply_Brake(float brake) {
-    // No scaling required
-    bldc_interface_set_forward_can(id);
-    bldc_interface_set_current_brake(brake);
+	// No scaling required
+	bldc_interface_set_forward_can(id);
+	bldc_interface_set_current_brake(brake);
 }
 //********************************************************************************
 // Pre: Serial port is initialized. Duty cycle is input as percentage.
 // Post: Duty cycle of motor has been set (percentage).
 //********************************************************************************
 void BLDC::set_Duty(float duty) {
-    // brake if value is within neutral range
-    if (duty > -1*config.Min_Duty && duty < config.Min_Duty) {
+	// brake if value is within neutral range
+	if (duty > -1 * config.Min_Duty && duty < config.Min_Duty) {
 		// apply brake if braking enabled
 		if (config.enable_brake) {
 			bldc_interface_set_forward_can(id);
-        	apply_Brake(config.Brake_Current);
-        	return;
+			apply_Brake(config.Brake_Current);
+			return;
 		}
 		else
 			duty = 0;
-    }   
-    // set controller id and send the packet
-    bldc_interface_set_forward_can(id);
-    bldc_interface_set_duty_cycle(duty);
+	}
+	// set controller id and send the packet
+	bldc_interface_set_forward_can(id);
+	bldc_interface_set_duty_cycle(duty);
 }
 //********************************************************************************
 // Pre: Serial port is initialized. Unscaled Analog/Digital value is input.
@@ -244,7 +244,7 @@ void BLDC::set_Duty(float duty) {
 //********************************************************************************
 void BLDC::set_Duty_Unscaled(float val) {
 	float duty;
-	duty = scale_To_Float(duty, -1*config.Max_Duty, config.Max_Duty);
+	duty = scale_To_Float(duty, -1 * config.Max_Duty, config.Max_Duty);
 	set_Duty(duty);
 }
 //********************************************************************************
@@ -252,9 +252,9 @@ void BLDC::set_Duty_Unscaled(float val) {
 // Post: Position of motor has been set in in degrees.
 //********************************************************************************
 void BLDC::set_Pos(float pos) {
-    // set controller id and send the packet
-    bldc_interface_set_forward_can(id);
-    bldc_interface_set_pos(pos);
+	// set controller id and send the packet
+	bldc_interface_set_forward_can(id);
+	bldc_interface_set_pos(pos);
 }
 //********************************************************************************
 // Pre: Rx callback functions have been set.
@@ -327,12 +327,12 @@ void BLDC::print_Data(void) {
 // Post: Value has been scaled and returned as float.
 //********************************************************************************
 float BLDC::scale_To_Float(float val, float min, float max) {
-    return (max-min)/(config.Scale_Max-config.Scale_Min) * val;
+	return (max - min) / (config.Scale_Max - config.Scale_Min) * val;
 }
 //********************************************************************************
 // Pre: Value to scale, min and max values for mapping have been input.
 // Post: Value has been scaled to and returned as integer.
 //********************************************************************************
 int BLDC::scale_To_Int(float val, int min, int max) {
-    return ((max-min)/(config.Scale_Max-config.Scale_Min)) * val;
+	return ((max - min) / (config.Scale_Max - config.Scale_Min)) * val;
 }

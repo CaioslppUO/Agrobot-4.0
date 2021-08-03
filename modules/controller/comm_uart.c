@@ -1,7 +1,7 @@
 /*
-	Copyright 2015 Benjamin Vedder	benjamin@vedder.se
+    Copyright 2015 Benjamin Vedder	benjamin@vedder.se
 
-	This program is free software: you can redistribute it and/or modify
+    This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -15,21 +15,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     */
 
-/*
- * comm_uart.c
- *
- *  Created on: 17 aug 2015
- *      Author: benjamin
- *  Modified on: 20 MAR 2017
- *      By: Ryan Owens
- *          - Modified for use with any linux serial device
- *          - Send and receive packets over serial port
- *          - Removed all code for STM32F4 Discovery
- *          - Uses a single rx function instead of processing threads.
- *            This allows more control of received data from
- *            multiple VESCs over CAN by calling rx only when
- *            application is ready to process data for each VESC.
- */
+    /*
+     * comm_uart.c
+     *
+     *  Created on: 17 aug 2015
+     *      Author: benjamin
+     *  Modified on: 20 MAR 2017
+     *      By: Ryan Owens
+     *          - Modified for use with any linux serial device
+     *          - Send and receive packets over serial port
+     *          - Removed all code for STM32F4 Discovery
+     *          - Uses a single rx function instead of processing threads.
+     *            This allows more control of received data from
+     *            multiple VESCs over CAN by calling rx only when
+     *            application is ready to process data for each VESC.
+     */
 
 #include "comm_uart.h"
 #include <sys/types.h>
@@ -44,7 +44,7 @@
 #include <string.h>
 #include <unistd.h>
 
-// Settings
+     // Settings
 #define BAUDRATE B115200   // Change as needed, keep B
 
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -53,7 +53,7 @@
 #define SERIAL_RX_BUFFER_SIZE 256
 
 // Private functions
-static void send_packet(unsigned char *data, unsigned int len);
+static void send_packet(unsigned char* data, unsigned int len);
 
 // File Descriptor
 static int fd;
@@ -66,18 +66,18 @@ static int fd;
  * Returns 1 to indicate that buffer has been read and sent to packet handler.
  */
 int receive_packet() {
-	int ret, i;
-	static uint8_t buffer[SERIAL_RX_BUFFER_SIZE];
-	// Read characters from Serial and put them in a buffer
-	ret = read(fd, buffer, SERIAL_RX_BUFFER_SIZE);
-	// Loop through the buffer and send each byte to the
-	// packet handler
-	for (i = 0; i < ret; i++) {
-		bldc_interface_uart_process_byte(buffer[i]);
-	}
-	// clear any data on Serial Rx that was not read
-	tcflush(fd, TCIFLUSH);
-	return 1;
+    int ret, i;
+    static uint8_t buffer[SERIAL_RX_BUFFER_SIZE];
+    // Read characters from Serial and put them in a buffer
+    ret = read(fd, buffer, SERIAL_RX_BUFFER_SIZE);
+    // Loop through the buffer and send each byte to the
+    // packet handler
+    for (i = 0; i < ret; i++) {
+        bldc_interface_uart_process_byte(buffer[i]);
+    }
+    // clear any data on Serial Rx that was not read
+    tcflush(fd, TCIFLUSH);
+    return 1;
 }
 
 /**
@@ -88,36 +88,36 @@ int receive_packet() {
  * @param len
  * Data array length
  */
-static void send_packet(unsigned char *data, unsigned int len) {
-	if (len > (PACKET_MAX_PL_LEN + 5)) {
-		return;
-	}
+static void send_packet(unsigned char* data, unsigned int len) {
+    if (len > (PACKET_MAX_PL_LEN + 5)) {
+        return;
+    }
 
-	// Wait for the previous transmission to finish.
-	tcdrain(fd);
+    // Wait for the previous transmission to finish.
+    tcdrain(fd);
 
-	// Copy this data to a new buffer in case the provided one is re-used
-	// after this function returns.
-	static uint8_t buffer[PACKET_MAX_PL_LEN + 5];
-	memcpy(buffer, data, len);
+    // Copy this data to a new buffer in case the provided one is re-used
+    // after this function returns.
+    static uint8_t buffer[PACKET_MAX_PL_LEN + 5];
+    memcpy(buffer, data, len);
 
-	// Send the data over Serial
-	write(fd, buffer, len);
+    // Send the data over Serial
+    write(fd, buffer, len);
 }
 
 /*
- * Call this function once from main program to initialize 
+ * Call this function once from main program to initialize
  * serial port for reading (non-blocking) and writing.
  */
 void comm_uart_init(char* modemDevice) {
-	struct termios newtio;
-	
-	bzero(&newtio, sizeof(newtio)); /* clear struct for new port settings */
+    struct termios newtio;
+
+    bzero(&newtio, sizeof(newtio)); /* clear struct for new port settings */
 
     /* BAUDRATE: Set bps rate. You could also use cfsetispeed and cfsetospeed.
-       CS8     : 8n1 (8bit,no parity,1 stopbit)
-       CLOCAL  : local connection, no modem contol
-       CREAD   : enable receiving characters */
+        CS8     : 8n1 (8bit,no parity,1 stopbit)
+        CLOCAL  : local connection, no modem contol
+        CREAD   : enable receiving characters */
     newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
 
     /* IGNPAR  : ignore bytes with parity errors
@@ -126,32 +126,32 @@ void comm_uart_init(char* modemDevice) {
 
     /*  Raw output  */
     newtio.c_oflag = 0;
-    
+
     newtio.c_cc[VTIME] = 0;
-    newtio.c_cc[VMIN]  = 1;
+    newtio.c_cc[VMIN] = 1;
 
     /* ICANON  : enable canonical input
        disable all echo functionality, and don't send signals to calling program */
     newtio.c_lflag = 0;
-	
+
     // Load the pin configuration
-	/* Open modem device for reading and writing and not as controlling tty
+    /* Open modem device for reading and writing and not as controlling tty
     because we don't want to get killed if linenoise sends CTRL-C. */
     fd = open(modemDevice, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd < 0) { perror(modemDevice); exit(-1); }
-    
+
     /* now clean the modem line and activate the settings for the port */
     tcflush(fd, TCIFLUSH);
-    tcsetattr(fd,TCSANOW,&newtio);
-    
-	// Initialize the bldc interface and provide a send function
-	bldc_interface_uart_init(send_packet);
+    tcsetattr(fd, TCSANOW, &newtio);
+
+    // Initialize the bldc interface and provide a send function
+    bldc_interface_uart_init(send_packet);
 }
 
 /*
- * Call this function at end of main program to close 
+ * Call this function at end of main program to close
  * serial port file descriptor.
  */
 void comm_uart_close(void) {
-	close(fd);
+    close(fd);
 }
