@@ -18,7 +18,7 @@ class Parameter:
     def __init__(self):
         pass
 
-    def set_param(name: str, value: str) -> None:
+    def set_param(self, name: str, value: str) -> None:
         """
         Set a new rosparam parameter.
 
@@ -32,7 +32,7 @@ class Parameter:
         except Exception as e:
             log.error(str(e))
 
-    def get_param(name: str) -> str:
+    def get_param(self, name: str) -> str:
         """
         Get a parameter from rosparam.
     
@@ -44,7 +44,7 @@ class Parameter:
         except Exception as e:
             raise e
 
-    def wait_for_setup() -> bool:
+    def wait_for_setup(self) -> bool:
         """
         Wait for setup to be executed. If timeout is reached, return false.
         """

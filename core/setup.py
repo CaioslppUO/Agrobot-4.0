@@ -2,10 +2,9 @@
 
 """
 @package setup
-Carrega para o Rosparam as variáveis e constantes utilizadas pela aplicação.
+Load to rosparam variables and constants used by the application.
 """
 
-import rosparam
 from agrobot.log import Log
 from agrobot.param import Parameter
 
