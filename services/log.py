@@ -15,7 +15,7 @@ class Log:
         src_file -> File that is using the log class. 
         """
         self.file: str = src_file
-        self.log_dir: str = str(pathlib.Path(__file__).parent.absolute()) + "/../log/"
+        self.log_dir: str = str(pathlib.Path.home()) + "/Agrobot/catkin_ws/src/agrobot/logs/"
         self.log_file: str = self.log_dir+"logs.txt"
 
         self.__create_log_file()

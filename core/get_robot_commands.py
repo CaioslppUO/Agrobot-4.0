@@ -83,7 +83,7 @@ def get_robot_commands(ip: str):
         data = json.loads(requests.get(ip).content.decode('utf-8'))
         publish_command(setup_command(data))
     except Exception as e:
-        log.error(str(e))
+        pass
 
 if __name__ == '__main__':
     try:
