@@ -2,7 +2,7 @@
 
 """
 @package get_robot_commands
-Pega os dados de controle do robô e os envia para o servidor ROS.
+Get control data from app server and send it to ROS server.
 """
 
 import rospy,os,pathlib,json,requests
@@ -87,7 +87,6 @@ def get_robot_commands(ip: str):
 
 if __name__ == '__main__':
     try:
-        log.info("Started get_robot_commands.py")
         ip: str = str("http://" + get_ipv4() +":3000/control")
         if(ip != ""):
             while not rospy.is_shutdown():

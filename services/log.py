@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+"""
+@package log
+Write log files.
+"""
+
 import os,pathlib
 from datetime import datetime
 
@@ -19,6 +24,8 @@ class Log:
         self.log_file: str = self.log_dir+"logs.txt"
 
         self.__create_log_file()
+        self.info("Started {0}".format(src_file))
+
 
     def __create_log_file(self) -> None:
         """
