@@ -1,21 +1,11 @@
-#ifndef CLIENT_CPP
-#define CLIENT_CPP
-
-#include <stdio.h>
-#include <iostream>
-#include <cstring>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <string.h>
-#include <bits/stdc++.h>
+#include "client.h"
 
 // C++ client for communication between ROS python nodes and Agrobot core C++ program.
 namespace Client {
     int BUFFER_SIZE = 10000; // MAX size of read/write characters.
     char IP[] = "localhost"; // LOCAL machine IP
     char PORT[] = "3000"; // LOCAL Port
-    int sock = socket(AF_INET,SOCK_STREAM,0);
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in server_address;
 
     /* Connect to the local server if it is running.
@@ -33,24 +23,24 @@ namespace Client {
         return 0;
     }
 
-    int getNumberOfParameters(char * command) {
+    int getNumberOfParameters(char* command) {
         std::vector <std::string> tokens;
         std::stringstream aux(command);
         std::string aux2;
-        while(getline(aux, aux2, ';')) { tokens.push_back(aux2); }
+        while (getline(aux, aux2, ';')) { tokens.push_back(aux2); }
         return tokens.size();
     }
 
     /* Send a message to the python server.
      * Throws buffer overflow if msg_size is bigger than BUFFER_SIZE.
     */
-    void emit(char * msg) {
-        int msg_size = strlen(msg),i,j;
+    void emit(char* msg) {
+        int msg_size = strlen(msg), i, j;
         char aux[1];
-        if(msg_size > BUFFER_SIZE) throw "buffer overflow";
-        send(sock, std::to_string(getNumberOfParameters(msg)+2).c_str(), sizeof(aux), 0);
+        if (msg_size > BUFFER_SIZE) throw "buffer overflow";
+        send(sock, std::to_string(getNumberOfParameters(msg) + 2).c_str(), sizeof(aux), 0);
         send(sock, ";", sizeof(aux), 0);
-        for(i = 0; i < msg_size; i++) {
+        for (i = 0; i < msg_size; i++) {
             aux[0] = msg[i];
             send(sock, aux, sizeof(aux), 0);
         }
@@ -74,4 +64,3 @@ namespace Client {
     }
 }
 
-#endif
