@@ -20,7 +20,7 @@ log: Log = Log("priority_decider.py")
 param: Parameter = Parameter()
 
 # Publication topic
-pub = rospy.Publisher("priority_decider", String, queue_size=10)
+pub: rospy.Publisher = rospy.Publisher("priority_decider", String, queue_size=10)
 
 # Control variables
 current_priority: int = 0
@@ -55,12 +55,11 @@ def publish_selected_command(command: String) -> None:
         log.error(str(e))
 
 
-def callback(data, priority: int) -> None:
+def callback(data: String, priority: int) -> None:
     """
     Response to a listened command.
 
     Parameters:
-    command -> Command read.
     priority -> Priority read.
     """
     global current_priority, remaining_commands, current_command
