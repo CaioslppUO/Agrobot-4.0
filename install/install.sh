@@ -22,6 +22,7 @@ CATKIN_SRC=$CATKIN/src
 CATKIN_DEVEL=$CATKIN/devel
 AGROBOT=$CATKIN_SRC/agrobot
 AGROBOT_SRC=$AGROBOT/src
+AGROBOT_MSG=$AGROBOT/msg
 
 # Folders
 rm -rf $AGROBOT_FOLDER
@@ -62,12 +63,19 @@ echo "source $CATKIN_DEVEL/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate
 cd $CATKIN_SRC && catkin_create_pkg agrobot std_msgs rospy roscpp message_generation message_runtime
 cd $CATKIN && catkin_make
 
+## Config
+cd "$LOCAL_FOLDER/../config/" && cp -r ./* "$AGROBOT"
+
 ## Core scripts
 cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 
 ## Services
 mkdir $AGROBOT_SERVICES
 cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
+
+## Messages
+mkdir $AGROBOT_MSG
+cd "$LOCAL_FOLDER/../msg/" && cp -r ./* "$AGROBOT_MSG"
 
 ## Server for communication with app
 cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT"
