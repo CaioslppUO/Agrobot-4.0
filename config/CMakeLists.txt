@@ -108,7 +108,7 @@ catkin_package(
 #  LIBRARIES agrobot
 #  CATKIN_DEPENDS message_generation message_runtime roscpp rospy std_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime ...
+  CATKIN_DEPENDS message_runtime
 )
 
 ###########
