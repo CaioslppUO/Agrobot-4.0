@@ -20,6 +20,7 @@ AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
 CATKIN=$AGROBOT_FOLDER/catkin_ws
 CATKIN_SRC=$CATKIN/src
 CATKIN_DEVEL=$CATKIN/devel
+AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/python3/dist-packages
 AGROBOT=$CATKIN_SRC/agrobot
 AGROBOT_SRC=$AGROBOT/src
 AGROBOT_MSG=$AGROBOT/msg
@@ -96,6 +97,10 @@ echo "</launch>" >> run.launch
 
 # Post install
 cd $CATKIN && catkin_make
+
+## Install agrobot site packages
+cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES"
+
 
 #clear
 echo DONE
