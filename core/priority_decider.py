@@ -7,8 +7,8 @@ Define which received command will be executed.
 
 import rospy
 from std_msgs.msg import String
-from agrobot.log import Log
-from agrobot.param import Parameter
+from agrobot_services.log import Log
+from agrobot_services.param import Parameter
 
 # priority_decider node
 rospy.init_node("priority_decider", anonymous=True)

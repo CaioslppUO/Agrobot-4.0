@@ -6,7 +6,7 @@ Get control data from app server and send it to ROS server.
 """
 
 import rospy,os,pathlib,json,requests
-from agrobot.log import Log
+from agrobot_services.log import Log
 from std_msgs.msg import String
 from shutil import which
 

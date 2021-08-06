@@ -15,7 +15,7 @@ ZSHRC=$HOME/.zshrc
 AGROBOT_FOLDER=$HOME/Agrobot
 AGROBOT_ENV=$AGROBOT_FOLDER/agrobot_env
 VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/python3.8/site-packages
-AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot
+AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot_services
 AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
 CATKIN=$AGROBOT_FOLDER/catkin_ws
 CATKIN_SRC=$CATKIN/src
@@ -95,5 +95,7 @@ done
 echo "</launch>" >> run.launch
 
 # Post install
+cd $CATKIN && catkin_make
+
 #clear
 echo DONE

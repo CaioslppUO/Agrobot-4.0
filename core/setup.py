@@ -5,8 +5,8 @@
 Load to rosparam variables and constants used by the application.
 """
 
-from agrobot.log import Log
-from agrobot.param import Parameter
+from agrobot_services.log import Log
+from agrobot_services.param import Parameter
 
 # Log class
 log: Log = Log("setup.py")

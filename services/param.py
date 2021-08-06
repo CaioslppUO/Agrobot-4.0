@@ -6,7 +6,7 @@ Used to get and set rosparam parameters.
 """
 
 import rosparam
-from agrobot.log import Log
+from agrobot_services.log import Log
 
 # Log class
 log: Log = Log("param.py")
