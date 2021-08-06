@@ -6,7 +6,7 @@ Define which received command will be executed.
 """
 
 import rospy
-from std_msgs.msg import String
+from agrobot.msg import Control
 from agrobot_services.log import Log
 from agrobot_services.param import Parameter
 
@@ -20,14 +20,13 @@ log: Log = Log("priority_decider.py")
 param: Parameter = Parameter()
 
 # Publication topic
-pub: rospy.Publisher = rospy.Publisher("priority_decider", String, queue_size=10)
+pub: rospy.Publisher = rospy.Publisher("priority_decider", Control, queue_size=10)
 
 # Control variables
 current_priority: int = 0
 remaining_commands: int = 0
-current_command: int = 0
+current_command: Control = None
 priorities: dict = {}
-
 
 def get_rosparam_priorities() -> None:
     """
@@ -40,7 +39,7 @@ def get_rosparam_priorities() -> None:
         {"GUARANTEED_COMMANDS": param.get_param("GUARANTEED_COMMANDS")})
 
 
-def publish_selected_command(command: String) -> None:
+def publish_selected_command(command: Control) -> None:
     """
     Publish the selected command.
     """
@@ -55,7 +54,7 @@ def publish_selected_command(command: String) -> None:
         log.error(str(e))
 
 
-def callback(data: String, priority: int) -> None:
+def callback(command: Control, priority: int) -> None:
     """
     Response to a listened command.
 
@@ -66,7 +65,7 @@ def callback(data: String, priority: int) -> None:
     if(priority >= current_priority or (remaining_commands == 0 and priority < current_priority)):
         current_priority = priority
         remaining_commands = priorities["GUARANTEED_COMMANDS"]
-        current_command = str(data.data)
+        current_command = command
         publish_selected_command(current_command)
     else:
         remaining_commands -= 1
@@ -81,7 +80,7 @@ def listen(topic: str, priority: int) -> None:
     priority -> Priority level of topic.
     """
     try:
-        rospy.Subscriber(topic, String, callback, callback_args=priority)
+        rospy.Subscriber(topic, Control, callback, callback_args=priority)
     except Exception as e:
         log.error(str(e))
 

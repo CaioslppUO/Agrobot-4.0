@@ -6,7 +6,7 @@ Split and send each command to it's destination.
 """
 
 import rospy
-from std_msgs.msg import String
+from agrobot.msg import Control
 from agrobot_services.log import Log
 
 # Log class
@@ -16,9 +16,9 @@ log: Log = Log("command_center.py")
 rospy.init_node("command_center", anonymous=True)
 
 # Control variables
-pub_control: rospy.Publisher = rospy.Publisher("/control_robot", String, queue_size=10)
+pub_control: rospy.Publisher = rospy.Publisher("/control_robot", Control, queue_size=10)
 
-def send_command_to_robot(command: String) -> None:
+def send_command_to_robot(command: Control) -> None:
     """
     Send a command to move the robot. 
 
@@ -27,12 +27,12 @@ def send_command_to_robot(command: String) -> None:
     """
     pub_control.publish(command)
 
-def callback(data: String) -> None:
+def callback(command: Control) -> None:
     """
     Response to a selected command from priority decider.
     """
     try:
-        send_command_to_robot(data.data)
+        send_command_to_robot(command)
     except Exception as e:
         log.error(str(e))
 
@@ -40,7 +40,7 @@ def listen_priority_decider() -> None:
     """
     Listen to the priority decider topic and call the callback function
     """
-    rospy.Subscriber("/priority_decider", String, callback)
+    rospy.Subscriber("/priority_decider", Control, callback)
     rospy.spin()
 
 if __name__ == "__main__":
