@@ -6,8 +6,9 @@ Get control data from app server and send it to ROS server.
 """
 
 import rospy,os,pathlib,json,requests
-from agrobot.log import Log
+from agrobot_services.log import Log
 from std_msgs.msg import String
+from agrobot.msg import Control
 from shutil import which
 
 # Directory variables
@@ -22,21 +23,22 @@ log: Log = Log("get_robot_commands.py")
 # Command sending control 
 last_command = None
 
-def setup_command(command) -> None:
+def setup_command(command) -> Control:
     """
     Separate and assemble the command to control the robot.
 
     Parameters:
     command -> Json content with speed and steer values.
     """
-    cm: str = ""
     try:
-        cm = "{0};{1}".format(command["speed"],command["steer"])
+        cm: Control = None
+        cm.speed = command["speed"]
+        cm.steer = command["steer"]
+        return cm
     except Exception as e:
         log.error(str(e))
-    return cm
 
-def publish_command(command: String) -> None:
+def publish_command(command: Control) -> None:
     """
     Publish the command to get_robot_commands topic.
 
@@ -46,7 +48,7 @@ def publish_command(command: String) -> None:
     global last_command
     try:
         if(last_command != command):
-            pub = rospy.Publisher("/get_robot_commands", String, queue_size=10)
+            pub = rospy.Publisher("/get_robot_commands", Control, queue_size=10)
             pub.publish(command)
             last_command = command
     except Exception as e:
