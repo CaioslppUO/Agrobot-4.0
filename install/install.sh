@@ -58,11 +58,11 @@ fi
 
 # ROS
 ## Catkin
-cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=python3
+cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 echo "source $CATKIN_DEVEL/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate
 echo "source $CATKIN_DEVEL/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate
 cd $CATKIN_SRC && catkin_create_pkg agrobot std_msgs rospy roscpp message_generation message_runtime
-cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=python3
+cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 ## Config
 cd "$LOCAL_FOLDER/../config/" && cp -r ./* "$AGROBOT"
@@ -113,7 +113,7 @@ done
 echo "</launch>" >> run.launch
 
 # Post install
-cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=python3
+cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 ## Install agrobot site packages
 cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES"
