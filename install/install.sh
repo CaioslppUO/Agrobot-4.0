@@ -27,9 +27,9 @@ AGROBOT_MSG=$AGROBOT/msg
 
 # Folders
 rm -rf $AGROBOT_FOLDER
-mkdir $AGROBOT_FOLDER/
+mkdir -p $AGROBOT_FOLDER/
 
-mkdir $AGROBOT_ENV
+mkdir -p $AGROBOT_ENV
 mkdir -p $CATKIN/src/
 
 # Virtual Env
@@ -71,11 +71,11 @@ cd "$LOCAL_FOLDER/../config/" && cp -r ./* "$AGROBOT"
 cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 
 ## Services
-mkdir $AGROBOT_SERVICES
+mkdir -p $AGROBOT_SERVICES
 cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
 
 ## Messages
-mkdir $AGROBOT_MSG
+mkdir -p $AGROBOT_MSG
 cd "$LOCAL_FOLDER/../msg/" && cp -r ./* "$AGROBOT_MSG"
 
 ## Server for communication with app
@@ -83,13 +83,13 @@ cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT"
 cd "$AGROBOT/server" && yarn install
 
 ## Modules
-cd "$AGROBOT/src/" && mkdir modules
+cd "$AGROBOT/src/" && mkdir -p modules
 cd "$LOCAL_FOLDER/../modules/"
 chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/"
 
 ## Roslaunch
 cd $AGROBOT
-mkdir launch && cd launch
+mkdir -p launch && cd launch
 echo "<launch>" > run.launch
     echo "    <node pkg='agrobot' type='start_server.py' name='start_server' output='screen'/>" >> run.launch
 
