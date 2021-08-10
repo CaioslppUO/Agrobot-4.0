@@ -2,3 +2,4 @@ bdist_wheel
 pyaml
 rospkg
 requests
+empy
