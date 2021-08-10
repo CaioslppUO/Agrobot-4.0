@@ -46,7 +46,7 @@ if __name__ == "__main__":
         t_connections = threading.Thread(target=storeConnections, args=())
         t_connections.start()
         startThreadMotor("/dev/ttyACM0")
-        startThreadMotor("/dev/ttyACM1")
+        #startThreadMotor("/dev/ttyACM1")
         rospy.Subscriber('/control_robot', Control, send)
         rospy.spin()
     except Exception as e:
