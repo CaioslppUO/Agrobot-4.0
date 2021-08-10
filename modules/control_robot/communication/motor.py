@@ -1,7 +1,6 @@
 import os
 import threading
 
-
 def startThreadMotor(port: str):
     global t_motor
     t_motor.append(threading.Thread(target=startMotor, args=[port]))

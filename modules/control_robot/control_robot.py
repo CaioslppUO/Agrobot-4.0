@@ -1,18 +1,26 @@
-import os
+#!/usr/bin/env python
+
+import os,pathlib,pwd
 import threading
 import rospy
-from server import wait_for_connection, connect
+from communication.server import wait_for_connection, connect
+from agrobot.msg import Control
 
+user: str = str(pwd.getpwuid(os.getuid())[0])
+home: str = "/home/{0}/".format(user)
+current_directory: str = str(pathlib.Path("__file__").parent.absolute())
+communication_directory: str = "{0}Agrobot/catkin_ws/src/agrobot/src/modules/control_robot/communication/".format(home)
+
+# Control robot node
+rospy.init_node("control_robot", anonymous=True)
 
 connections = []
 address = []
-s = connect('localhost', 3000)
+s = connect('localhost', 3011)
 
-
-def send(msg):
+def send(msg: Control):
     for con in connections:
-        con.send(msg.encode('utf-8'))
-
+        con.send(str(msg.speed).encode('utf-8'))
 
 def storeConnections():
     global connections, address
@@ -29,7 +37,7 @@ def startThreadMotor(port: str):
 
 
 def startMotor(args):
-    os.system("./controller.out " + args)
+    os.system("{0}controller.out {1}".format(communication_directory,args))
 
 
 t_motor = []

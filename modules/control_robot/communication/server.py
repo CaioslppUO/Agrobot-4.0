@@ -1,5 +1,4 @@
 import socket
-import threading
 
 buffer: list = []
 attemptive: int = 0

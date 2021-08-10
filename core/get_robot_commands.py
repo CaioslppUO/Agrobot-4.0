@@ -7,7 +7,6 @@ Get control data from app server and send it to ROS server.
 
 import rospy,os,pathlib,json,requests
 from agrobot_services.log import Log
-from std_msgs.msg import String
 from agrobot.msg import Control
 from shutil import which
 
@@ -31,7 +30,7 @@ def setup_command(command) -> Control:
     command -> Json content with speed and steer values.
     """
     try:
-        cm: Control = None
+        cm: Control = Control()
         cm.speed = command["speed"]
         cm.steer = command["steer"]
         return cm

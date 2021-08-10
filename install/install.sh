@@ -82,17 +82,33 @@ cd "$LOCAL_FOLDER/../msg/" && cp -r ./* "$AGROBOT_MSG"
 cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT"
 cd "$AGROBOT/server" && yarn install
 
+## Modules
+cd "$AGROBOT/src/" && mkdir modules
+cd "$LOCAL_FOLDER/../modules/"
+chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/"
+
 ## Roslaunch
 cd $AGROBOT
 mkdir launch && cd launch
 echo "<launch>" > run.launch
     echo "    <node pkg='agrobot' type='start_server.py' name='start_server' output='screen'/>" >> run.launch
-files=$(ls $LOCAL_FOLDER/../core)
-for entry in $files
+
+## Core files in roslaunch
+core_files=$(ls $LOCAL_FOLDER/../core)
+for core_entry in $core_files
 do
-    name=$(echo "$entry" | cut -f 1 -d '.')
-    echo "    <node pkg='agrobot' type='$entry' name='$name' output='screen'/>" >> run.launch
+    core_name=$(echo "$core_entry" | cut -f 1 -d '.')
+    echo "    <node pkg='agrobot' type='$core_entry' name='$core_name' output='screen'/>" >> run.launch
 done
+
+## Modules files in roslaunch
+modules_files=$(basename -a $(ls $LOCAL_FOLDER/../modules/*/*.py))
+for module_entry in $modules_files
+do
+    module_name=$(echo "$module_entry" | cut -f 1 -d '.')
+    echo "    <node pkg='agrobot' type='$module_entry' name='$module_name' output='screen'/>" >> run.launch
+done
+
 echo "</launch>" >> run.launch
 
 # Post install
