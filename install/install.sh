@@ -85,6 +85,7 @@ cd "$AGROBOT/server" && yarn install
 ## Modules
 cd "$AGROBOT/src/" && mkdir -p modules
 cd "$LOCAL_FOLDER/../modules/"
+g++ control_robot/control_motor/controller/*.c*  -pthread -o control_robot/communication/controller.out
 chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/"
 
 ## Roslaunch
