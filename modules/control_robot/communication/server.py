@@ -1,25 +1,46 @@
 import socket
+import os
 
 buffer: list = []
 attemptive: int = 0
 timeout: int = 10000
 
+
+def close_port(port: int):
+    try:
+        os.system("fuser -n tcp {0} > temp.txt".format(port))
+        f = open("temp.txt", "r")
+        puid = f.readline()
+        f.close()
+        if(puid != ""):
+            os.system("kill -9 " + str(puid))
+            os.remove("temp.txt")
+    except:
+        print("Ninguém esta usando a porta {0}".format(port))
+
+
 def connect(server_ip: str, port: int):
+    close_port(port)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((server_ip, port))
     s.listen(1)
     return s
 
+
 def wait_for_connection(connection):
     conn, addr = connection.accept()
-    print("connection from: " + str(addr)+ "\n")
+    print("connection from: " + str(addr) + "\n")
     return conn, addr
 
+
 def transmission_bug_detected() -> bool:
-    if(int(str(buffer[0])) != len(buffer)): return 1
-    if(buffer[-1] != '$'): return 1
+    if(int(str(buffer[0])) != len(buffer)):
+        return 1
+    if(buffer[-1] != '$'):
+        return 1
     return 0
+
 
 def emit():
     global buffer
@@ -33,14 +54,17 @@ def emit():
     for cm in commands:
         buffer.append(cm)
 
-    if(transmission_bug_detected()): raise Exception("Transmission error: Size <{}> received but message length is <{}>".format(int(buffer[0]),len(buffer)))
-    
-    #Emit
+    if(transmission_bug_detected()):
+        raise Exception("Transmission error: Size <{}> received but message length is <{}>".format(
+            int(buffer[0]), len(buffer)))
+
+    # Emit
     print(buffer)
     buffer = []
 
+
 def process(msg: str):
-    global buffer,attemptive
+    global buffer, attemptive
     attemptive += 1
     rec = ""
     for aux in msg.split("\x00"):
@@ -51,9 +75,5 @@ def process(msg: str):
         attemptive = 0
         raise Exception("Process timeout: Can't find <$> at end of message.")
 
-    if(buffer[-1][-1] == '$'): # End of command
+    if(buffer[-1][-1] == '$'):  # End of command
         emit()
-        
-
-
-
