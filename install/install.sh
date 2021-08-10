@@ -72,6 +72,7 @@ cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 
 ## Services
 cd $VIRTUAL_ENV_SITE_PACKAGES && mkdir -p agrobot_services
+sleep 5
 cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
 
 ## Messages
@@ -114,6 +115,7 @@ echo "</launch>" >> run.launch
 
 # Post install
 cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
+sleep 5
 
 ## Install agrobot site packages
 cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES"
