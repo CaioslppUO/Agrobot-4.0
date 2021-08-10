@@ -1,3 +1,4 @@
 pyaml
 rospkg
 requests
+bdist_wheel
