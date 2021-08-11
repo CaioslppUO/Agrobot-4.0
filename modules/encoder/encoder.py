@@ -10,7 +10,7 @@ from std_msgs.msg import String
 from agrobot_services.log import Log
 
 # Log class
-log: Log = Log()
+log: Log = Log("encoder.py")
 
 try:
     import RPi.GPIO as GPIO
