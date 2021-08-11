@@ -15,12 +15,12 @@ ZSHRC=$HOME/.zshrc
 AGROBOT_FOLDER=$HOME/Agrobot
 AGROBOT_ENV=$AGROBOT_FOLDER/agrobot_env
 VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/$(ls $AGROBOT_ENV/lib/ | grep python*)/site-packages
-AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot_services
+AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot
 AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
 CATKIN=$AGROBOT_FOLDER/catkin_ws
 CATKIN_SRC=$CATKIN/src
 CATKIN_DEVEL=$CATKIN/devel
-AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages
+AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages/agrobot
 AGROBOT=$CATKIN_SRC/agrobot
 AGROBOT_SRC=$AGROBOT/src
 AGROBOT_MSG=$AGROBOT/msg
@@ -115,9 +115,9 @@ echo "</launch>" >> run.launch
 # Post install
 cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
-## Install agrobot site packages
-cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES"
-
+## Install agrobot site packages from ROS
+cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
+rm -r $AGROBOT_SITE_PACKAGES
 
 #clear
 echo DONE
