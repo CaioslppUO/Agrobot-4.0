@@ -14,22 +14,22 @@ BASHRC=$HOME/.bashrc
 ZSHRC=$HOME/.zshrc
 AGROBOT_FOLDER=$HOME/Agrobot
 AGROBOT_ENV=$AGROBOT_FOLDER/agrobot_env
-VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/python*/site-packages
+VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/$(ls $AGROBOT_ENV/lib/ | grep python*)/site-packages
 AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot_services
 AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
 CATKIN=$AGROBOT_FOLDER/catkin_ws
 CATKIN_SRC=$CATKIN/src
 CATKIN_DEVEL=$CATKIN/devel
-AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/python*/dist-packages
+AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages
 AGROBOT=$CATKIN_SRC/agrobot
 AGROBOT_SRC=$AGROBOT/src
 AGROBOT_MSG=$AGROBOT/msg
 
 # Folders
 rm -rf $AGROBOT_FOLDER
-mkdir -p $AGROBOT_FOLDER/
+mkdir $AGROBOT_FOLDER/
 
-mkdir -p $AGROBOT_ENV
+mkdir $AGROBOT_ENV
 mkdir -p $CATKIN/src/
 
 # Virtual Env
@@ -71,12 +71,11 @@ cd "$LOCAL_FOLDER/../config/" && cp -r ./* "$AGROBOT"
 cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 
 ## Services
-cd $VIRTUAL_ENV_SITE_PACKAGES && mkdir -p agrobot_services
-sleep 5
+mkdir $AGROBOT_SERVICES
 cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
 
 ## Messages
-mkdir -p $AGROBOT_MSG
+mkdir $AGROBOT_MSG
 cd "$LOCAL_FOLDER/../msg/" && cp -r ./* "$AGROBOT_MSG"
 
 ## Server for communication with app
@@ -91,7 +90,7 @@ chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/"
 
 ## Roslaunch
 cd $AGROBOT
-mkdir -p launch && cd launch
+mkdir launch && cd launch
 echo "<launch>" > run.launch
     echo "    <node pkg='agrobot' type='start_server.py' name='start_server' output='screen'/>" >> run.launch
 
@@ -115,7 +114,6 @@ echo "</launch>" >> run.launch
 
 # Post install
 cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
-sleep 5
 
 ## Install agrobot site packages
 cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES"
