@@ -4,7 +4,7 @@
 namespace Client {
     int BUFFER_SIZE = 10000; // MAX size of read/write characters.
     char IP[] = "localhost"; // LOCAL machine IP
-    char PORT[] = "3011"; // LOCAL Port
+    char PORT[] = "3509"; // LOCAL Port
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in server_address;
 
