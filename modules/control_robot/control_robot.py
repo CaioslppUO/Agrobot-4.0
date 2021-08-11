@@ -22,7 +22,7 @@ rospy.init_node("control_robot", anonymous=True)
 connections = []
 address = []
 t_motor = []
-s = connect('localhost', 3000)
+s = connect('localhost', 3509)
 
 
 # Function that communicates with socket server
