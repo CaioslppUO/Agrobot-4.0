@@ -2,3 +2,4 @@ pyaml
 rospkg
 requests
 empy
+RPi.GPIO
