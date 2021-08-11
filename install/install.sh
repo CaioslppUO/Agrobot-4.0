@@ -119,5 +119,10 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
 rm -r $AGROBOT_SITE_PACKAGES
 
+## Install service 
+sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
+sudo cp "$LOCAL_FOLDER/service/start_agrobot.sh" /usr/bin
+sudo cp "$LOCAL_FOLDER/service/attach.sh $HOME" 
+
 #clear
 echo DONE
