@@ -1,0 +1,13 @@
+[Unit]
+Description=Starts Agrobot
+
+[Service]
+User=agrobot
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/start_agrobot.sh
+ExecStop=/usr/bin/tmux send-keys "stop" Enter
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target
