@@ -39,9 +39,9 @@ def storeConnections():
         address.append(addr)
 
 # Start thread reference instance motor "Vesc"
-def startThreadMotor(port: str):
+def startThreadMotor(port: str,direction: int):
     global t_motor
-    t_motor.append(threading.Thread(target=startMotor, args=[port]))
+    t_motor.append(threading.Thread(target=startMotor, args=[direction,port]))
     t_motor[len(t_motor)-1].start()
 
 # Function that start instance from motor
@@ -53,8 +53,8 @@ if __name__ == "__main__":
     try:
         t_connections = threading.Thread(target=storeConnections, args=())
         t_connections.start()
-        startThreadMotor("/dev/ttyACM0")
-        #startThreadMotor("/dev/ttyACM1")
+        startThreadMotor("/dev/ttyACM0",-1)
+        startThreadMotor("/dev/ttyACM1",1)
         rospy.Subscriber('/control_robot', Control, send)
         rospy.spin()
     except Exception as e:
