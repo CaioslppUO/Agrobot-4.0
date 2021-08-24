@@ -20,6 +20,10 @@ parameters = {
     "APP_PRIORITY": "1000",
     "LIDAR_PRIORITY": "999",
     "GUARANTEED_COMMANDS": "50",
+    "USB_PORT1": "/dev/ttyACM0",
+    "USB_PORT2": "/dev/ttyACM1",
+    "HTTP_PORT": "3509",
+    "GUARANTEED_COMMANDS": "50",
     # Setup
     "SETUP_DONE": "True"
 }
