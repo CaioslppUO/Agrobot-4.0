@@ -80,12 +80,24 @@ def publish_encoder(value: str) -> None:
     """Publish processed encoder value."""
     pub.publish(value)
 
+def convertToDegrees(value: str) -> str:
+    """Convert encoder value to degrees"""
+    value = int(value)
+    if(value > 300):
+        return "-999999"
+    elif(value < -300):
+        return "999999"
+    OldRange = (300 - -300)  
+    NewRange = (180 - 0)  
+    NewValue = (((value - -300) * NewRange) / OldRange) + 0
+    return str(NewValue)
+
 if __name__ == '__main__':
     try:
         while not rospy.is_shutdown():
             if(gpio_imported):
                 clk,dt = read_encoder()
                 process_encoder_reading(clk,dt)
-                publish_encoder(str(count))
+                publish_encoder(convertToDegrees(str(count)))
     except Exception as e:
         log.error(str(e))
