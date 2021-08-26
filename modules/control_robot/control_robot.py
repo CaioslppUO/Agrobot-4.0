@@ -47,7 +47,10 @@ def get_rosparam_priorities() -> None:
 # Function that communicates with socket server
 
 
-def send(msg: Control):
+def send(msg: Control) -> None:
+    """
+    Send command to socket client in C
+    """
     for con in connections:
         con.send(str(msg.speed).encode('utf-8'))
 
@@ -55,24 +58,29 @@ def send(msg: Control):
 
 
 def storeConnections():
+    """
+    Store connections socket 
+    """
     global connections, address
     while True:
-        conn, addr = wait_for_connection(s)
+        conn, addr = wait_for_connection(server)
         connections.append(conn)
         address.append(addr)
 
-# Start thread reference instance motor "Vesc"
-
 
 def startThreadMotor(port: str):
+    """
+    Start threads that store program in C that controls Vesc
+    """
     global t_motor
     t_motor.append(threading.Thread(target=startMotor, args=[port]))
     t_motor[len(t_motor)-1].start()
 
-# Function that start instance from motor
-
 
 def startMotor(args):
+    """
+    Start program in C that controls Vesc
+    """
     os.system("{0}controller.out {1}".format(communication_directory, args))
 
 
