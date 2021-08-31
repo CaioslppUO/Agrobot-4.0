@@ -34,7 +34,6 @@ address = []
 t_motor = []
 priorities: dict = {}
 
-
 def get_rosparam_priorities() -> None:
     """
     Get priorities from rosparam.
