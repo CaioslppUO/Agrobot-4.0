@@ -44,8 +44,6 @@ def get_rosparam_priorities() -> None:
     priorities.update({"HTTP_PORT": int(param.get_param("HTTP_PORT"))})
 
 # Function that communicates with socket server
-
-
 def send(msg: Control) -> None:
     """
     Send command to socket client in C
