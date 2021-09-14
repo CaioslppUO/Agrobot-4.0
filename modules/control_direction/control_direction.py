@@ -16,6 +16,9 @@ log: Log = Log("control_direction.py")
 
 try:
     import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(16, GPIO.OUT)
+    GPIO.setup(19, GPIO.OUT)
     gpio_imported: bool = True
 except Exception as e:
     gpio_imported: bool = False
@@ -33,22 +36,25 @@ def stop() -> None:
     """
     Stop the motors.
     """
-    GPIO.output(motor_1, GPIO.LOW)
-    GPIO.output(motor_2, GPIO.LOW)
+    if(gpio_imported):
+        GPIO.output(motor_1, GPIO.LOW)
+        GPIO.output(motor_2, GPIO.LOW)
 
 def turn_right() -> None:
     """
     Turn the motors to the right indefinitely.
     """
-    GPIO.output(motor_1, GPIO.LOW)
-    GPIO.output(motor_2, GPIO.HIGH)
+    if(gpio_imported):
+        GPIO.output(motor_1, GPIO.LOW)
+        GPIO.output(motor_2, GPIO.HIGH)
 
 def turn_left() -> None:
     """
     Turn the motors to the left indefinitely.
     """
-    GPIO.output(motor_1, GPIO.HIGH)
-    GPIO.output(motor_2, GPIO.LOW)
+    if(gpio_imported):
+        GPIO.output(motor_1, GPIO.HIGH)
+        GPIO.output(motor_2, GPIO.LOW)
 
 def move(readValue: int, goTo: int):
     """
@@ -56,15 +62,18 @@ def move(readValue: int, goTo: int):
     """
     global ecoder
     dead_zone = 3
-    if(goTo > 0 and goTo < 180):
-        if(goTo > readValue+dead_zone or goTo > readValue-dead_zone): # Go to left
-            #turn_left()
+    if(goTo >= 0 and goTo <= 180):
+        if(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
+            stop()
+            print("Stop")
+        elif(goTo > readValue): # Go to left
+            turn_left()
             print("Turn Left")
-        elif(goTo < readValue+dead_zone or goTo < readValue-dead_zone): # Go to right
-            #turn_right()
+        elif(goTo < readValue): # Go to right
+            turn_right()
             print("Turn Right")
         else: # Stop
-            #stop()
+            stop()
             print("Stop")
     else:
         log.warning("Invalid steer value: {0}".format(goTo))
@@ -80,6 +89,7 @@ def callback(data) -> None:
         encoder = int(data.data)
     except Exception as e:
         log.error(str(e))
+        pass
 
 def move_callback(command: Control):
     """
@@ -99,3 +109,9 @@ def listen_encoder() -> None:
     rospy.Subscriber("/encoder", String, callback)
     rospy.Subscriber("/control_robot", Control, move_callback)
     rospy.spin()
+
+if __name__ == "__main__":
+    try:
+        listen_encoder()
+    except Exception as e:
+        log.error(str(e))

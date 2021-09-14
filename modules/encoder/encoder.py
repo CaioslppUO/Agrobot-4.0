@@ -5,12 +5,12 @@
 Read and process encoder values, publishing them into ROS.
 """
 
-import rospy
-from std_msgs.msg import String
-from agrobot.log import Log
+# import rospy
+# from std_msgs.msg import String
+# from agrobot.log import Log
 
 # Log class
-log: Log = Log("encoder.py")
+# log: Log = Log("encoder.py")
 
 try:
     import RPi.GPIO as GPIO
