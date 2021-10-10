@@ -1,26 +1,46 @@
 #!/bin/bash
 
+# Color Constants
+PURPLE='\033[1;35m'
+RED='\033[0;31m'
+NC='\033[0m'
+
 # Dependencies
-sudo apt install python3-pip
-sudo apt install -y python3-venv
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-sudo apt install -y nodejs
-sudo npm install -g yarn
+{ ## Ubuntu
+    sudo apt install python3-pip &&
+    sudo apt install -y python3-venv &&
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - &&
+    sudo apt install -y nodejs &&
+    sudo npm install -g yarn &&
+    printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n"
+} || {
+    ## Arch
+    sudo pacman -S --noconfirm python-pip &&
+    sudo pacman -S --noconfirm python-virtualenv &&
+    sudo pacman -S --noconfirm nodejs &&
+    sudo npm install -g yarn &&
+    printf "${PURPLE}Instaled dependencies for Arch Linux${NC}\n"
+} || {
+    printf "${RED}Could not install dependencies for Arch or Ubuntu Linux${NC}\n"
+}
+
 
 # Paths
+## User
 LOCAL_FOLDER=$PWD
 HOME=/home/$USER
 BASHRC=$HOME/.bashrc
 ZSHRC=$HOME/.zshrc
+## Virtualenv
 AGROBOT_FOLDER=$HOME/Agrobot
 AGROBOT_ENV=$AGROBOT_FOLDER/agrobot_env
-VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/$(ls $AGROBOT_ENV/lib/ | grep python*)/site-packages
-AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot
+
 AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
+## Catkin
 CATKIN=$AGROBOT_FOLDER/catkin_ws
 CATKIN_SRC=$CATKIN/src
 CATKIN_DEVEL=$CATKIN/devel
-AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages/agrobot
+## project
 AGROBOT=$CATKIN_SRC/agrobot
 AGROBOT_SRC=$AGROBOT/src
 AGROBOT_MSG=$AGROBOT/msg
@@ -71,6 +91,8 @@ cd "$LOCAL_FOLDER/../config/" && cp -r ./* "$AGROBOT"
 cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/"
 
 ## Services
+VIRTUAL_ENV_SITE_PACKAGES=$AGROBOT_ENV/lib/$(ls $AGROBOT_ENV/lib/ | grep python*)/site-packages
+AGROBOT_SERVICES=$VIRTUAL_ENV_SITE_PACKAGES/agrobot_services
 mkdir $AGROBOT_SERVICES
 cd "$LOCAL_FOLDER/../services/" && chmod +x ./* && cp -r ./* "$AGROBOT_SERVICES"
 
@@ -113,16 +135,27 @@ done
 echo "</launch>" >> run.launch
 
 # Post install
+## Catkin compilations
 cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
-## Install agrobot site packages from ROS
-cd "$AGROBOT_SITE_PACKAGES" && cp -r ./ "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
-rm -r $AGROBOT_SITE_PACKAGES
+## Install agrobot site packages from ROS into agrobot project
+{
+    ## Ubuntu Linux
+    AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages/agrobot
+    mkdir -p "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
+    cp -r "$AGROBOT_SITE_PACKAGES/"* "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
+} || {
+    ## Arch Linux
+    AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/site-packages/agrobot
+    mkdir -p "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
+    cp -r "$AGROBOT_SITE_PACKAGES/"* "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/"
+}
+
 
 ## Install service 
-sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
-sudo cp "$LOCAL_FOLDER/service/start_agrobot.sh" /usr/bin
-sudo cp "$LOCAL_FOLDER/service/attach.sh $HOME" 
+#sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
+#sudo cp "$LOCAL_FOLDER/service/start_agrobot.sh" /usr/bin
+#sudo cp "$LOCAL_FOLDER/service/attach.sh $HOME" 
 
 #clear
-echo DONE
+printf "${PURPLE}DONE${NC}\n    "

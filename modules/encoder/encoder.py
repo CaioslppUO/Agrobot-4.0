@@ -7,7 +7,7 @@ Read and process encoder values, publishing them into ROS.
 
 import rospy
 from std_msgs.msg import String
-from agrobot.log import Log
+from agrobot_services.log import Log
 
 # Log class
 log: Log = Log("encoder.py")
