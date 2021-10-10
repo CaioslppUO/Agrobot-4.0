@@ -7,7 +7,7 @@ Read encoder value and move the motors that control the robot direction.
 
 import rospy
 from std_msgs.msg import String
-from agrobot.log import Log
+from agrobot_services.log import Log
 from agrobot.msg import Control
 import time
 

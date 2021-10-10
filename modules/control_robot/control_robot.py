@@ -8,8 +8,8 @@ import threading
 import rospy
 from communication.server import wait_for_connection, connect
 from agrobot.msg import Control
-from agrobot.log import Log
-from agrobot.param import Parameter
+from agrobot_services.log import Log
+from agrobot_services.param import Parameter
 
 
 # Parameter class

@@ -7,7 +7,7 @@ Split and send each command to it's destination.
 
 import rospy
 from agrobot.msg import Control
-from agrobot.log import Log
+from agrobot_services.log import Log
 
 # Log class
 log: Log = Log("command_center.py")
