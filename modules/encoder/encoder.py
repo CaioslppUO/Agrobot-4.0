@@ -41,6 +41,7 @@ pub: rospy.Publisher = rospy.Publisher("/encoder", String, queue_size=10)
 last_clk = -1
 last_dt = -1
 count = 0
+last_published_value = 89
 
 def read_encoder():
     """Read encoder values and process them.
@@ -78,19 +79,22 @@ def process_encoder_reading(clk,dt) -> int:
 
 def publish_encoder(value: str) -> None:
     """Publish processed encoder value."""
-    pub.publish(value)
+    global last_published_value
+    if(int(value) != int(last_published_value)):
+        pub.publish(value)
+        last_published_value = value
 
 def convertToDegrees(value: str) -> str:
     """Convert encoder value to degrees"""
     value = int(value)
     if(value > 300):
-        return "-999999"
+        return "-999"
     elif(value < -300):
-        return "999999"
+        return "999"
     OldRange = (300 - -300)  
     NewRange = (180 - 0)  
     NewValue = (((value - -300) * NewRange) / OldRange) + 0
-    return str(NewValue)
+    return str(int(NewValue))
 
 if __name__ == '__main__':
     try:

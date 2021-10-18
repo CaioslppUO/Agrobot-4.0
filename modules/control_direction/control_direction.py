@@ -61,15 +61,18 @@ def move(readValue: int, goTo: int):
     Move the motor until reach the goTo value.
     """
     global ecoder
-    dead_zone = 3
+    dead_zone = 10
     if(goTo >= 0 and goTo <= 180):
-        if(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
+        if(readValue == 999 or readValue == -999):
             stop()
             print("Stop")
-        elif(goTo > readValue): # Go to left
+        elif(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
+            stop()
+            print("Stop")
+        elif(goTo < readValue): # Go to left
             turn_left()
             print("Turn Left")
-        elif(goTo < readValue): # Go to right
+        elif(goTo > readValue): # Go to right
             turn_right()
             print("Turn Right")
         else: # Stop
