@@ -110,6 +110,10 @@ cd "$LOCAL_FOLDER/../modules/"
 g++ control_robot/control_motor/*.c*  -pthread -o control_robot/communication/controller.out
 chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/"
 
+## Specials
+cd "$LOCAL_FOLDER/../special/"
+chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/"
+
 ## Roslaunch
 cd $AGROBOT
 mkdir launch && cd launch
@@ -133,10 +137,10 @@ do
 done
 
 ## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction' name='control_direction_left' output='screen'>" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_left' output='screen'>" >> run.launch
 echo "    <param name='side' type='str' value='left' />" >> run.launch
 echo "    </node>" >> run.launch
-echo "    <node pkg='agrobot' type='control_direction' name='control_direction_left' output='screen'>" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_right' output='screen'>" >> run.launch
 echo "    <param name='side' type='str' value='right' />" >> run.launch
 echo "    </node>" >> run.launch
 
