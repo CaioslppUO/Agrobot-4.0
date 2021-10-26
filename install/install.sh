@@ -137,12 +137,8 @@ do
 done
 
 ## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_left' output='screen'>" >> run.launch
-echo "    <param name='side' type='str' value='left' />" >> run.launch
-echo "    </node>" >> run.launch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_right' output='screen'>" >> run.launch
-echo "    <param name='side' type='str' value='right' />" >> run.launch
-echo "    </node>" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_left' args='16 19' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_right' args='29 31' output='screen' />" >> run.launch
 
 echo "</launch>" >> run.launch
 

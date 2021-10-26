@@ -5,7 +5,7 @@
 Read encoder value and move the motors that control the robot direction.
 """
 
-import rospy
+import rospy, sys
 from std_msgs.msg import String
 from agrobot_services.log import Log
 from agrobot.msg import Control
@@ -29,8 +29,8 @@ rospy.init_node('control_direction', anonymous=True)
 
 # Control variables.
 encoder: int = 90
-motor_1: int = 16 # Raspberry pin 16
-motor_2: int = 19 # Raspberry pin 19
+motor_1: int = int(sys.argv[1]) # Raspberry pin for motor 1
+motor_2: int = int(sys.argv[2]) # Raspberry pin for motor 2
 
 def stop() -> None:
     """
