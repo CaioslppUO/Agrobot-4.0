@@ -132,6 +132,14 @@ do
     echo "    <node pkg='agrobot' type='$module_entry' name='$module_name' output='screen'/>" >> run.launch
 done
 
+## Special nodes in roslauch
+echo "    <node pkg='agrobot' type='control_direction' name='control_direction_left' output='screen'>" >> run.launch
+echo "    <param name='side' type='str' value='left' />" >> run.launch
+echo "    </node>" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction' name='control_direction_left' output='screen'>" >> run.launch
+echo "    <param name='side' type='str' value='right' />" >> run.launch
+echo "    </node>" >> run.launch
+
 echo "</launch>" >> run.launch
 
 # Post install
