@@ -5,7 +5,7 @@
 Read and process encoder values, publishing them into ROS.
 """
 
-import rospy
+import rospy, sys
 from std_msgs.msg import String
 from agrobot_services.log import Log
 
@@ -20,8 +20,8 @@ except Exception as e:
     log.warning("Could not import RPi.GPIO.")
 
 # Encoder pins
-clk_pin = 7 # Green
-dt_pin = 13 # White
+clk_pin = int(sys.argv[1]) # Green
+dt_pin = int(sys.argv[2]) # White
 
 # GPIO Configurations
 if(gpio_imported):
@@ -32,7 +32,6 @@ if(gpio_imported):
 
 # Encoder node
 rospy.init_node('control_robot', anonymous=True)
-
 
 # Variáveis de controle de publicação.
 pub: rospy.Publisher = rospy.Publisher("/encoder", String, queue_size=10)

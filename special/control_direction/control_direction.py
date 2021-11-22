@@ -63,21 +63,47 @@ def move(readValue: int, goTo: int):
     global ecoder
     dead_zone = 10
     if(goTo >= 0 and goTo <= 180):
-        if(readValue == 999 or readValue == -999):
-            stop()
-            print("Stop")
-        elif(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
-            stop()
-            print("Stop")
-        elif(goTo < readValue): # Go to left
-            turn_left()
-            print("Turn Left")
-        elif(goTo > readValue): # Go to right
-            turn_right()
-            print("Turn Right")
-        else: # Stop
-            stop()
-            print("Stop")
+        if(readValue == 999): # Right only
+            if(goTo >= 90):
+                if(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
+                    stop()
+                    print("Stop")
+                elif(goTo > readValue): # Go to right
+                    turn_right()
+                    print("Turn Right")
+                else: # Stop
+                    stop()
+                    print("Stop")
+            else:
+                stop()
+                print("Stop")
+        elif(readValue == -999): # Left only
+            if(goTo <= 90):
+                if(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
+                    stop()
+                    print("Stop")
+                elif(goTo < readValue): # Go to left
+                    turn_left()
+                    print("Turn Left")
+                else: # Stop
+                    stop()
+                    print("Stop")
+            else:
+                stop()
+                print("Stop")
+        else: ## Left or Right
+            if(goTo >= readValue-dead_zone and goTo <= readValue+dead_zone):
+                stop()
+                print("Stop")
+            elif(goTo < readValue): # Go to left
+                turn_left()
+                print("Turn Left")
+            elif(goTo > readValue): # Go to right
+                turn_right()
+                print("Turn Right")
+            else: # Stop
+                stop()
+                print("Stop")
     else:
         log.warning("Invalid steer value: {0}".format(goTo))
     if(readValue < 0 or readValue > 300):
