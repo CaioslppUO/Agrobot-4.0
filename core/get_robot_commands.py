@@ -31,7 +31,7 @@ def setup_command(command) -> Control:
     """
     try:
         cm: Control = Control()
-        cm.speed = float(command["speed"])
+        cm.speed = float(command["speed"]) * float(command["limit"])
         cm.steer = float(command["steer"])
         return cm
     except Exception as e:
