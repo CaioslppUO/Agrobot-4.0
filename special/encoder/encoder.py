@@ -31,7 +31,7 @@ if(gpio_imported):
     GPIO.setup(dt_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Encoder node
-rospy.init_node('control_robot', anonymous=True)
+rospy.init_node('encoder', anonymous=True)
 
 # Variáveis de controle de publicação.
 pub: rospy.Publisher = rospy.Publisher("/encoder", String, queue_size=10)
