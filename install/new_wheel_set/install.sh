@@ -62,7 +62,7 @@ mkdir -p $CATKIN/src/
     # Virtual Env
     python3 -m venv $AGROBOT_ENV/
     source "$AGROBOT_ENV_BIN/activate"
-    packages=$(cat "$LOCAL_FOLDER/req")
+    packages=$(cat "$LOCAL_FOLDER/../req")
     for package in $packages
     do
         pip3 install $package
@@ -182,7 +182,15 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     SITE_PACKAGES="1"
 }
 
-#clear
+# Setup Ros Master Uri
+{
+    echo "export ROS_MASTER_URI=192.168.1.2" >> $AGROBOT_ENV_BIN/activate &&
+    ROS_MASTER_URI=1
+} || {
+    ROS_MASTER_URI=0
+}
+
+clear
 printf "      Feature                 Situation\n\n"
 if [ "$UBUNTU_DEPENDENCIES" == "1" ] 
     then
@@ -240,5 +248,11 @@ if [ "$SITE_PACKAGES" == "1" ]
         printf "${BLUE}Site packages${NC}                      ${GREEN}OK${NC}\n"
     else
         printf "${BLUE}Site packages${NC}                      ${RED}NO${NC}\n"
+fi
+if [ "$ROS_MASTER_URI" == "1" ] 
+    then
+        printf "${BLUE}Ros Master Uri${NC}                     ${GREEN}OK${NC}\n"
+    else
+        printf "${BLUE}Ros Master Uri${NC}                     ${RED}NO${NC}\n"
 fi
 printf "\n${GREEN}DONE${NC}\n"
