@@ -214,6 +214,16 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     SITE_PACKAGES="1"
 }
 
+## setting ROS_IP and ROS_MASTER_URI
+{
+    ipv4=$(hostname -I | awk '{print $1}') &&
+    echo "export ROS_MASTER_URI=http://$ipv4:11311" >> "$AGROBOT_ENV_BIN/activate" &&
+    echo "export ROS_IP=$ipv4" >> "$AGROBOT_ENV_BIN/activate" &&
+    ROS_IP_AND_MASTER_URI=1
+} || {
+    ROS_IP_AND_MASTER_URI=0
+}
+
 
 ## Install service 
 #sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
@@ -290,5 +300,11 @@ if [ "$SITE_PACKAGES" == "1" ]
         printf "${BLUE}Site packages${NC}                      ${GREEN}OK${NC}\n"
     else
         printf "${BLUE}Site packages${NC}                      ${RED}NO${NC}\n"
+fi
+if [ "$ROS_IP_AND_MASTER_URI" == "1" ] 
+    then
+        printf "${BLUE}Ros IP and Master Uri${NC}              ${GREEN}OK${NC}\n"
+    else
+        printf "${BLUE}Ros IP and Master Uri${NC}              ${RED}NO${NC}\n"
 fi
 printf "\n${GREEN}DONE${NC}\n"

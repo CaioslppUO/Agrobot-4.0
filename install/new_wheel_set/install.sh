@@ -184,7 +184,9 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 # Setup Ros Master Uri
 {
+    ipv4=$(hostname -I | awk '{print $1}')
     echo "export ROS_MASTER_URI=http://192.168.1.2:11311" >> $AGROBOT_ENV_BIN/activate &&
+    echo "export ROS_IP=$ipv4" >> "$AGROBOT_ENV_BIN/activate" &&
     ROS_MASTER_URI=1
 } || {
     ROS_MASTER_URI=0
