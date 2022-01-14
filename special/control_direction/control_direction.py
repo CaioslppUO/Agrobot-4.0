@@ -66,16 +66,12 @@ def move(readValue: int, goTo: int):
         if( (encoder == 999 and goTo < 90) or (encoder == -999 and goTo > 90) or (encoder != 999 and encoder != -999) ):
             if(goTo < 89): # Go to left
                 turn_left()
-                print("Turn Left")
             elif(goTo > 91): # Go to right
                 turn_right()
-                print("Turn Right")
             else: # Stop
                 stop()
-                print("Stop")
         else:
             stop()
-            print("Stop")
     else:
         log.warning("Invalid steer value: {0}".format(goTo))
     if(readValue < 0 or readValue > 300):
@@ -88,7 +84,6 @@ def callback(data) -> None:
     global encoder
     try:
         encoder = int(data.data)
-        print("Encoder = {}".format(encoder))
     except Exception as e:
         log.error(str(e))
         pass
