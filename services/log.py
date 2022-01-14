@@ -5,7 +5,7 @@
 Write log files.
 """
 
-import os,pathlib
+import os, pathlib
 from datetime import datetime
 
 """

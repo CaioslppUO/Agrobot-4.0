@@ -9,20 +9,23 @@ import rospy, sys
 from std_msgs.msg import String
 from agrobot_services.log import Log
 from agrobot.msg import Control
-import time
+from agrobot_services.runtime_log import RuntimeLog
 
 # Log class
 log: Log = Log("control_direction.py")
+runtime_log: RuntimeLog = RuntimeLog("encoder.py")
 
 try:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(16, GPIO.OUT)
-    GPIO.setup(19, GPIO.OUT)
+    GPIO.setup(int(sys.argv[1]), GPIO.OUT)
+    GPIO.setup(int(sys.argv[2]), GPIO.OUT)
     gpio_imported: bool = True
+    runtime_log.info("Pin {0} set as Motor 1 and {2} as Motor 2".format(sys.argv[1], sys.argv[2]))
 except Exception as e:
     gpio_imported: bool = False
     log.warning("Could not import RPi.GPIO.")
+    runtime_log.warning("Could not import RPi.GPIO")
 
 # Encoder node
 rospy.init_node('control_direction', anonymous=True)
@@ -64,14 +67,16 @@ def move(readValue: int, goTo: int):
     dead_zone = 10
     if(goTo >= 0 and goTo <= 180):
         if( (encoder == 999 and goTo < 90) or (encoder == -999 and goTo > 90) or (encoder != 999 and encoder != -999) ):
-            if(goTo < 89): # Go to left
+            if(goTo < 90 - dead_zone): # Go to left
                 turn_left()
-            elif(goTo > 91): # Go to right
+            elif(goTo > 90 + dead_zone): # Go to right
                 turn_right()
             else: # Stop
                 stop()
+                runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
         else:
             stop()
+            runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
     else:
         log.warning("Invalid steer value: {0}".format(goTo))
     if(readValue < 0 or readValue > 300):

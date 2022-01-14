@@ -8,9 +8,11 @@ Read and process encoder values, publishing them into ROS.
 import rospy, sys
 from std_msgs.msg import String
 from agrobot_services.log import Log
+from agrobot_services.runtime_log import RuntimeLog
 
 # Log class
 log: Log = Log("encoder.py")
+runtime_log: RuntimeLog = RuntimeLog("encoder.py")
 
 try:
     import RPi.GPIO as GPIO
@@ -18,10 +20,12 @@ try:
 except Exception as e:
     gpio_imported: bool = False
     log.warning("Could not import RPi.GPIO.")
+    runtime_log.warning("Could not import RPi.GPIO")
 
 # Encoder pins
 clk_pin = int(sys.argv[1]) # Green
 dt_pin = int(sys.argv[2]) # White
+runtime_log.info("Pin {0} set as Green and {1} as White".format(sys.argv[1], sys.argv[2]))
 
 # GPIO Configurations
 if(gpio_imported):
