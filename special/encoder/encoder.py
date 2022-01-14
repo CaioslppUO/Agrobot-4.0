@@ -91,9 +91,9 @@ def convertToDegrees(value: str) -> str:
     """Convert encoder value to degrees"""
     value = int(value)
     if(value > 300):
-        return "-999"
+        return -1
     elif(value < -300):
-        return "999"
+        return 181
     OldRange = (300 - -300)  
     NewRange = (180 - 0)  
     NewValue = (((value - -300) * NewRange) / OldRange) + 0

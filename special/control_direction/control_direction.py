@@ -66,7 +66,7 @@ def move(readValue: int, goTo: int):
     global ecoder
     dead_zone = 20
     if(goTo >= 0 and goTo <= 180):
-        if( (encoder == 999 and goTo < 90) or (encoder == -999 and goTo > 90) or (encoder != 999 and encoder != -999) ):
+        if( (encoder > 180 and goTo < 90) or (encoder < 0 and goTo > 90) or (encoder <= 180 and encoder >= 0) ):
             if(goTo < 90 - dead_zone): # Go to left
                 turn_left()
             elif(goTo > 90 + dead_zone): # Go to right
