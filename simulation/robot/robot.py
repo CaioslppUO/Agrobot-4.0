@@ -82,7 +82,7 @@ class Robot:
         Move the motor until reach the encoder_destine_value value.
         """
         encoder = motor.encoder.position
-        dead_zone = 10
+        dead_zone = 20
         if(encoder_destine_value >= 0 and encoder_destine_value <= 180):
             if( (encoder == 999 and encoder_destine_value < 90) or (encoder == -999 and encoder_destine_value > 90) or (encoder != 999 and encoder != -999) ):
                 if(encoder_destine_value < 90 - dead_zone): # Go to left
@@ -112,12 +112,12 @@ class Robot:
         print(color_text("----------> MONITOR <----------", bcolors.HEADER))
         print(color_text("Left Wheel", bcolors.OKGREEN), end="")
         print(color_text("             Right Wheel", bcolors.OKGREEN))
-        print("position: {0}        position: {1}".format(self.wheel_left.state, self.wheel_right.state))
+        print("position: {0:12} position: {1}".format(self.wheel_left.state, self.wheel_right.state))
         print("\n")
         print(color_text("Left Motor", bcolors.OKGREEN), end="")
         print(color_text("             Right Motor", bcolors.OKGREEN))
-        print("encoder: {0}            encoder: {1}".format(self.motor_left.encoder.position, self.motor_right.encoder.position))
-        print("direction: {0}       direction: {1}".format(self.motor_left.orientation, self.motor_right.orientation))
+        print("encoder: {0:13} encoder: {1}".format(str(self.motor_left.encoder.position), str(self.motor_right.encoder.position)))
+        print("direction: {0:11} direction: {1}".format(self.motor_left.orientation, self.motor_right.orientation))
 
     def callback_control_robot(self, command: Control) -> None:
         """
@@ -125,16 +125,16 @@ class Robot:
         """
         try:
             # Steer
-            command.steer = command.steer + 1
-            dst = 90 * command.steer
+            dst = 90 * (command.steer + 1)
             self.move_axis(dst, self.motor_left)
             self.move_axis(dst, self.motor_right)
             # Speed
             self.move(self.wheel_left, command.speed)
             self.move(self.wheel_right, command.speed)
             self.show_monitor()
+            print("DST: " + str(dst))
         except Exception as e:
-            pass
+            print(e)
 
     def listen_control_robot(self):
         """
