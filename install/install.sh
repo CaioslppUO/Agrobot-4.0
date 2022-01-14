@@ -166,6 +166,15 @@ fi
     SPECIALS="0"
 }
 
+{
+    ## Simulations
+    cd "$LOCAL_FOLDER/../simulation/" &&
+    chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
+    SIMULATION="1"
+} || {
+    SIMULATION="0"
+}
+
 ## Roslaunch
 cd $AGROBOT
 mkdir launch && cd launch
@@ -223,7 +232,6 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 } || {
     ROS_IP_AND_MASTER_URI=0
 }
-
 
 ## Install service 
 #sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
@@ -306,5 +314,11 @@ if [ "$ROS_IP_AND_MASTER_URI" == "1" ]
         printf "${BLUE}Ros IP and Master Uri${NC}              ${GREEN}OK${NC}\n"
     else
         printf "${BLUE}Ros IP and Master Uri${NC}              ${RED}NO${NC}\n"
+fi
+if [ "$SIMULATION" == "1" ] 
+    then
+        printf "${BLUE}Simulations${NC}                        ${GREEN}OK${NC}\n"
+    else
+        printf "${BLUE}Simulations${NC}                        ${RED}NO${NC}\n"
 fi
 printf "\n${GREEN}DONE${NC}\n"

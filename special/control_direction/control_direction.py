@@ -13,7 +13,7 @@ from agrobot_services.runtime_log import RuntimeLog
 
 # Log class
 log: Log = Log("control_direction.py")
-runtime_log: RuntimeLog = RuntimeLog("encoder.py")
+runtime_log: RuntimeLog = RuntimeLog("control_direction.py")
 
 try:
     import RPi.GPIO as GPIO
@@ -64,7 +64,7 @@ def move(readValue: int, goTo: int):
     Move the motor until reach the goTo value.
     """
     global ecoder
-    dead_zone = 10
+    dead_zone = 20
     if(goTo >= 0 and goTo <= 180):
         if( (encoder == 999 and goTo < 90) or (encoder == -999 and goTo > 90) or (encoder != 999 and encoder != -999) ):
             if(goTo < 90 - dead_zone): # Go to left
@@ -73,7 +73,6 @@ def move(readValue: int, goTo: int):
                 turn_right()
             else: # Stop
                 stop()
-                runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
         else:
             stop()
             runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
@@ -98,10 +97,9 @@ def move_callback(command: Control):
     Response to the movement command.
     """
     global encoder
-    command.steer = command.steer + 1
     angle = 90
-    dst = angle * command.steer
-    move(encoder,dst)
+    dst = angle * (command.steer + 1)
+    move(encoder, dst)
     
 
 def listen_encoder() -> None:
