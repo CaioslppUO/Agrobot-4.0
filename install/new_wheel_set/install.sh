@@ -154,12 +154,12 @@ mkdir launch && cd launch
 echo "<launch>" > run.launch
 
 ## control_robot module in roslaunch
-echo "    <node pkg='agrobot' type='control_robot.py' name='control_robot' output='screen'/>" >> run.launch
+echo "    <node pkg='agrobot' type='control_robot.py' name='control_robot_2' output='screen'/>" >> run.launch
 
 ## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction' args='16 19' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_left' args='7 13' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_right' args='29 31' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_2' args='16 19' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='encoder.py' name='encoder_left_2' args='7 13' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='encoder.py' name='encoder_right_2' args='29 31' output='screen' />" >> run.launch
 
 echo "</launch>" >> run.launch
 
@@ -184,7 +184,7 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 # Setup Ros Master Uri
 {
-    echo "export ROS_MASTER_URI=192.168.1.2" >> $AGROBOT_ENV_BIN/activate &&
+    echo "export ROS_MASTER_URI=http://192.168.1.2:11311" >> $AGROBOT_ENV_BIN/activate &&
     ROS_MASTER_URI=1
 } || {
     ROS_MASTER_URI=0
