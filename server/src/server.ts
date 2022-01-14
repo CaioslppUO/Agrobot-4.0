@@ -29,7 +29,6 @@ io.on('connection', (socket) => {
    * Evento ativado pelo app, alterando a instancia "control"
    */
   socket.on('control_update', (data) => {
-    console.log('Control update: ', data);
     control = data;
   });
 
@@ -38,7 +37,6 @@ io.on('connection', (socket) => {
    * Evento ativado pelo app, alterando a instancia "autoModeData"
    */
   socket.on('auto_mode_params_update', (data) => {
-    console.log('Auto mode params update: ', data);
     autoModeData = data;
   });
 
