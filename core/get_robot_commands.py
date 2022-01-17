@@ -5,7 +5,7 @@
 Get control data from app server and send it to ROS server.
 """
 
-import rospy,os,pathlib,json,requests
+import rospy,os,pathlib,json,requests,traceback
 from agrobot_services.log import Log
 from agrobot.msg import Control
 from shutil import which
@@ -35,7 +35,7 @@ def setup_command(command) -> Control:
         cm.steer = float(command["steer"])
         return cm
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())
 
 def publish_command(command: Control) -> None:
     """
@@ -51,7 +51,7 @@ def publish_command(command: Control) -> None:
             pub.publish(command)
             last_command = command
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())
     
 def get_ipv4() -> str:
     """
@@ -70,9 +70,9 @@ def get_ipv4() -> str:
             if(os.path.exists(current_directory+"ipv4.tmp")):
                 os.system("rm " + current_directory+"ipv4.tmp")
         except Exception as e:
-            log.error(str(e))
+            log.error(traceback.format_exc())
     else:
-        log.error("Could not find ifconfig tool. Please install package net-tools.")
+        log.error("Could not find ifconfig tool. Please install package net-tools. {0}".format(traceback.format_exc()))
     return str(ip)
 
 def get_robot_commands(ip: str):
@@ -93,6 +93,6 @@ if __name__ == '__main__':
             while not rospy.is_shutdown():
                 get_robot_commands(ip)
         else:
-            log.error("Could not get ipv4.")
+            log.error("Could not get ipv4. {0}".format(traceback.format_exc()))
     except rospy.ROSInterruptException:
-        log.warning("Roscore was interrupted.")
+        log.warning("Roscore was interrupted. {1}".format(traceback.format_exc()))

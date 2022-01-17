@@ -5,10 +5,13 @@
 Simulate the main components of the robot for tests purpose.
 """
 from agrobot.msg import Control
-import rospy, os
+from agrobot_services.log import Log
+import rospy, os, traceback
 
 # Robot node
 rospy.init_node("robot", anonymous=True)
+
+log: Log = Log("robot.py")
 
 class bcolors:
     HEADER = '\033[95m'
@@ -129,7 +132,7 @@ class Robot:
             self.move(self.wheel_right, command.speed)
             self.show_monitor()
         except Exception as e:
-            print(e)
+            log.error(traceback.format_exc())
 
     def listen_control_robot(self):
         """
@@ -144,6 +147,6 @@ if __name__ == "__main__":
         robot.show_monitor()
         robot.listen_control_robot()
     except Exception as e:
-        print(e)
+        log.error(traceback.format_exc())
 
         

@@ -9,7 +9,6 @@ current_directory: str = str(pathlib.Path(__file__).parent.absolute()) + "/"
 def start_server():
     os.system("cd " + current_directory+" && yarn start& ")
 
-
 def close_port():
     try:
         os.system("fuser -n tcp 3000 > temp.txt")
@@ -21,7 +20,6 @@ def close_port():
             os.remove("temp.txt")
     except:
         print("Ninguém esta usando a porta 3000")
-
 
 if __name__ == "__main__":
     try:

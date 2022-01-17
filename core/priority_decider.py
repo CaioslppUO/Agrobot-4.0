@@ -5,7 +5,7 @@
 Define which received command will be executed.
 """
 
-import rospy
+import rospy, traceback
 from agrobot.msg import Control
 from agrobot_services.log import Log
 from agrobot_services.param import Parameter
@@ -49,9 +49,9 @@ def publish_selected_command(command: Control) -> None:
             pub.publish(command)
             current_command = None
         else:
-            log.warning("Could not publish command. Command is None.")
+            log.warning("Could not publish command. Command is None. {0}".format(traceback.format_exc()))
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())
 
 
 def callback(command: Control, priority: int) -> None:
@@ -82,7 +82,7 @@ def listen(topic: str, priority: int) -> None:
     try:
         rospy.Subscriber(topic, Control, callback, callback_args=priority)
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())
 
 
 def add_listeners_and_listen() -> None:
@@ -107,4 +107,4 @@ if __name__ == "__main__":
         get_rosparam_priorities()
         add_listeners_and_listen()
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())

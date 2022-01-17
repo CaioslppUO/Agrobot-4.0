@@ -10,6 +10,7 @@ from std_msgs.msg import String
 from agrobot_services.log import Log
 from agrobot.msg import Control
 from agrobot_services.runtime_log import RuntimeLog
+import traceback
 
 # Log class
 log: Log = Log("control_direction.py")
@@ -24,7 +25,7 @@ try:
     runtime_log.info("Pin {0} set as Motor 1 and {2} as Motor 2".format(sys.argv[1], sys.argv[2]))
 except Exception as e:
     gpio_imported: bool = False
-    log.warning("Could not import RPi.GPIO.")
+    log.warning("Could not import RPi.GPIO. {0}".format(traceback.format_exc()))
     runtime_log.warning("Could not import RPi.GPIO")
 
 # Encoder node
@@ -77,9 +78,9 @@ def move(readValue: int, goTo: int):
             stop()
             runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
     else:
-        log.warning("Invalid steer value: {0}".format(goTo))
+        log.warning("Invalid steer value: {0}. {1}".format(goTo, traceback.format_exc()))
     if(readValue < 0 or readValue > 300):
-        log.warning("Invalid read value from encoder {0}".format(readValue))
+        log.warning("Invalid read value from encoder {0}. {1}".format(readValue, traceback.format_exc()))
 
 def callback(data) -> None:
     """
@@ -89,7 +90,7 @@ def callback(data) -> None:
     try:
         encoder = int(data.data)
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())
         pass
 
 def move_callback(command: Control):
@@ -114,4 +115,4 @@ if __name__ == "__main__":
     try:
         listen_encoder()
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())

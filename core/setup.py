@@ -42,4 +42,4 @@ if __name__ == "__main__":
     try:
         setup_parameters()
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())

@@ -8,6 +8,7 @@ Split and send each command to it's destination.
 import rospy
 from agrobot.msg import Control
 from agrobot_services.log import Log
+import traceback
 
 # Log class
 log: Log = Log("command_center.py")
@@ -34,7 +35,7 @@ def callback(command: Control) -> None:
     try:
         send_command_to_robot(command)
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())
 
 def listen_priority_decider() -> None:
     """
@@ -47,4 +48,4 @@ if __name__ == "__main__":
     try:
         listen_priority_decider()
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())

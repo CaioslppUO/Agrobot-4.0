@@ -10,6 +10,7 @@ from communication.server import wait_for_connection, connect
 from agrobot.msg import Control
 from agrobot_services.log import Log
 from agrobot_services.param import Parameter
+import traceback
 
 
 # Parameter class
@@ -98,4 +99,4 @@ if __name__ == "__main__":
             u_motor.close()
         for con in connections:
             con.close()
-        log.error(str(e))
+        log.error(traceback.format_exc())

@@ -9,6 +9,7 @@ import rospy, sys
 from std_msgs.msg import String
 from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
+import traceback
 
 # Log class
 log: Log = Log("encoder.py")
@@ -19,7 +20,7 @@ try:
     gpio_imported: bool = True
 except Exception as e:
     gpio_imported: bool = False
-    log.warning("Could not import RPi.GPIO.")
+    log.warning("Could not import RPi.GPIO. {0}".format(traceback.format_exc()))
     runtime_log.warning("Could not import RPi.GPIO")
 
 # Encoder pins
@@ -107,4 +108,4 @@ if __name__ == '__main__':
                 process_encoder_reading(clk,dt)
                 publish_encoder(convertToDegrees(str(count)))
     except Exception as e:
-        log.error(str(e))
+        log.error(traceback.format_exc())

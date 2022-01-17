@@ -5,7 +5,7 @@
 Used to get and set rosparam parameters.
 """
 
-import rosparam
+import rosparam, traceback
 from agrobot_services.log import Log
 
 # Log class
@@ -33,7 +33,7 @@ class Parameter:
             log.info(
                 "New rosparam parameter set: {0} = {1}".format(name, value))
         except Exception as e:
-            log.error(str(e))
+            log.error(traceback.format_exc())
 
     def get_param(self, name: str) -> str:
         """
