@@ -13,24 +13,32 @@ ARCH_DEPENDENCIES="0"
 SITE_PACKAGES="0"
 
 # Dependencies
-{ ## Ubuntu
-    sudo apt install python3-pip &&
-    sudo apt install -y python3-venv &&
-    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - &&
-    sudo apt install -y nodejs &&
-    sudo npm install -g yarn &&
-    printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
-    UBUNTU_DEPENDENCIES="1"
-} || {
-    ## Arch
-    sudo pacman -S --noconfirm python-pip &&
-    sudo pacman -S --noconfirm python-virtualenv &&
-    sudo pacman -S --noconfirm nodejs &&
-    sudo pacman -S --noconfirm npm &&
-    sudo npm install -g yarn &&
-    printf "${PURPLE}Instaled dependencies for Arch Linux${NC}\n" &&
-    ARCH_DEPENDENCIES="1"
-}
+if [ $1 == "--no-dependency" ] 
+    then
+        echo "skipping dependency install."
+        UBUNTU_DEPENDENCIES="1"
+        ARCH_DEPENDENCIES="1"
+    else
+        { ## Ubuntu
+        sudo apt install python3-pip &&
+        sudo apt install -y python3-venv &&
+        curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - &&
+        sudo apt install -y nodejs &&
+        sudo npm install -g yarn &&
+        printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
+        UBUNTU_DEPENDENCIES="1"
+    } || {
+        ## Arch
+        sudo pacman -S --noconfirm python-pip &&
+        sudo pacman -S --noconfirm python-virtualenv &&
+        sudo pacman -S --noconfirm nodejs &&
+        sudo pacman -S --noconfirm npm &&
+        sudo npm install -g yarn &&
+        printf "${PURPLE}Instaled dependencies for Arch Linux${NC}\n" &&
+        ARCH_DEPENDENCIES="1"
+    }
+fi
+
 
 
 # Paths
