@@ -9,7 +9,7 @@ from agrobot_services.log import Log
 from agrobot_services.param import Parameter
 
 # Log class
-log: Log = Log("setup.py")
+log: Log = Log("setup.py", "w")
 
 # Parameter class
 param: Parameter = Parameter()

@@ -9,11 +9,13 @@ import rosparam
 from agrobot_services.log import Log
 
 # Log class
-log: Log = Log("param.py")
+log: Log = Log("param.py", ignore_start=True)
 
 """
 Manage rosparam parameters.
 """
+
+
 class Parameter:
     def __init__(self):
         pass
@@ -28,14 +30,15 @@ class Parameter:
         """
         try:
             rosparam.set_param(name, value)
-            log.info("New rosparam parameter set: {0} = {1}".format(name, value))
+            log.info(
+                "New rosparam parameter set: {0} = {1}".format(name, value))
         except Exception as e:
             log.error(str(e))
 
     def get_param(self, name: str) -> str:
         """
         Get a parameter from rosparam.
-    
+
         Parameters:
         name -> Name of the parameter.
         """
