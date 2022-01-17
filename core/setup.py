@@ -7,9 +7,12 @@ Load to rosparam variables and constants used by the application.
 
 from agrobot_services.log import Log
 from agrobot_services.param import Parameter
+import traceback
+from agrobot_services.runtime_log import RuntimeLog
 
 # Log class
 log: Log = Log("setup.py", "w")
+runtime_log: RuntimeLog = RuntimeLog("setup.py")
 
 # Parameter class
 param: Parameter = Parameter()
@@ -43,3 +46,4 @@ if __name__ == "__main__":
         setup_parameters()
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("setup.py terminated")

@@ -9,12 +9,14 @@ import rospy, traceback
 from agrobot.msg import Control
 from agrobot_services.log import Log
 from agrobot_services.param import Parameter
+from agrobot_services.runtime_log import RuntimeLog
 
 # priority_decider node
 rospy.init_node("priority_decider", anonymous=True)
 
 # Log class
 log: Log = Log("priority_decider.py")
+runtime_log: RuntimeLog = RuntimeLog("priority_decider.py")
 
 # Parameter class
 param: Parameter = Parameter()
@@ -49,9 +51,10 @@ def publish_selected_command(command: Control) -> None:
             pub.publish(command)
             current_command = None
         else:
-            log.warning("Could not publish command. Command is None. {0}".format(traceback.format_exc()))
+            log.warning("Could not publish command. Command is None.")
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("Could not publish a selected command")
 
 
 def callback(command: Control, priority: int) -> None:
@@ -83,6 +86,7 @@ def listen(topic: str, priority: int) -> None:
         rospy.Subscriber(topic, Control, callback, callback_args=priority)
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("Could not listen to a topic")
 
 
 def add_listeners_and_listen() -> None:
@@ -108,3 +112,4 @@ if __name__ == "__main__":
         add_listeners_and_listen()
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("priority_decider.py terminated")

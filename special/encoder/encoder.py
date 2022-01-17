@@ -109,3 +109,4 @@ if __name__ == '__main__':
                 publish_encoder(convertToDegrees(str(count)))
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("encoder.py terminated")

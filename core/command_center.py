@@ -9,9 +9,11 @@ import rospy
 from agrobot.msg import Control
 from agrobot_services.log import Log
 import traceback
+from agrobot_services.runtime_log import RuntimeLog
 
 # Log class
 log: Log = Log("command_center.py")
+runtime_log: RuntimeLog = RuntimeLog("command_center.py")
 
 # command_center node
 rospy.init_node("command_center", anonymous=True)
@@ -36,6 +38,7 @@ def callback(command: Control) -> None:
         send_command_to_robot(command)
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("Could not send command to robot")
 
 def listen_priority_decider() -> None:
     """
@@ -49,3 +52,4 @@ if __name__ == "__main__":
         listen_priority_decider()
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("command_center.py terminated")

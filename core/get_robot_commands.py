@@ -9,6 +9,7 @@ import rospy,os,pathlib,json,requests,traceback
 from agrobot_services.log import Log
 from agrobot.msg import Control
 from shutil import which
+from agrobot_services.runtime_log import RuntimeLog
 
 # Directory variables
 current_directory: str = str(pathlib.Path(__file__).parent.absolute()) + "/"
@@ -18,6 +19,7 @@ rospy.init_node('get_robot_commands', anonymous=True)
 
 # Log class
 log: Log = Log("get_robot_commands.py")
+runtime_log: RuntimeLog = RuntimeLog("get_robot_commands.py")
 
 # Command sending control 
 last_command = None
@@ -36,6 +38,7 @@ def setup_command(command) -> Control:
         return cm
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("Could not setup Control command")
 
 def publish_command(command: Control) -> None:
     """
@@ -52,6 +55,7 @@ def publish_command(command: Control) -> None:
             last_command = command
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("Could not publish new command to /get_robot_commands")
     
 def get_ipv4() -> str:
     """
@@ -71,6 +75,7 @@ def get_ipv4() -> str:
                 os.system("rm " + current_directory+"ipv4.tmp")
         except Exception as e:
             log.error(traceback.format_exc())
+            runtime_log.error("Could not get IPV4")
     else:
         log.error("Could not find ifconfig tool. Please install package net-tools. {0}".format(traceback.format_exc()))
     return str(ip)
@@ -93,6 +98,6 @@ if __name__ == '__main__':
             while not rospy.is_shutdown():
                 get_robot_commands(ip)
         else:
-            log.error("Could not get ipv4. {0}".format(traceback.format_exc()))
+            log.error("Could not get ipv4.".format())
     except rospy.ROSInterruptException:
-        log.warning("Roscore was interrupted. {1}".format(traceback.format_exc()))
+        log.warning("Roscore was interrupted.")

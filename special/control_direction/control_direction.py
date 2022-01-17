@@ -78,9 +78,9 @@ def move(readValue: int, goTo: int):
             stop()
             runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
     else:
-        log.warning("Invalid steer value: {0}. {1}".format(goTo, traceback.format_exc()))
+        log.warning("Invalid steer value: {0}.".format(goTo))
     if(readValue < 0 or readValue > 300):
-        log.warning("Invalid read value from encoder {0}. {1}".format(readValue, traceback.format_exc()))
+        log.warning("Invalid read value from encoder {0}.".format(readValue))
 
 def callback(data) -> None:
     """
@@ -116,3 +116,4 @@ if __name__ == "__main__":
         listen_encoder()
     except Exception as e:
         log.error(traceback.format_exc())
+        runtime_log.error("control_direction.py terminated")
