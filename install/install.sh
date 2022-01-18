@@ -206,7 +206,7 @@ do
 done
 
 ## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction' args='16 19' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction' args='16 19 1 2' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='encoder.py' name='encoder_left' args='7 13' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='encoder.py' name='encoder_right' args='29 31' output='screen' />" >> run.launch
 

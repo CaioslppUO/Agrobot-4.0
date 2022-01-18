@@ -157,7 +157,7 @@ echo "<launch>" > run.launch
 echo "    <node pkg='agrobot' type='control_robot.py' name='control_robot_2' output='screen'/>" >> run.launch
 
 ## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_2' args='16 19' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_2' args='16 19 3 4' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='encoder.py' name='encoder_left_2' args='7 13' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='encoder.py' name='encoder_right_2' args='29 31' output='screen' />" >> run.launch
 
