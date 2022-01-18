@@ -7,6 +7,16 @@ interface Control {
   power: boolean;
 }
 
+export interface Wheel_adjustment {
+  wheel: number;
+  direction: number;
+};
+
+export const wheel_adjustmentDefaultParams = {
+  wheel: 0,
+  direction: 0,
+};
+
 export const controlDefaultParams: Control = {
   speed: 0,
   steer: 0,

@@ -7,7 +7,7 @@ Get control data from app server and send it to ROS server.
 
 import rospy,os,pathlib,json,requests,traceback
 from agrobot_services.log import Log
-from agrobot.msg import Control
+from agrobot.msg import Control, WheelAdjustment
 from shutil import which
 from agrobot_services.runtime_log import RuntimeLog
 
@@ -44,9 +44,6 @@ def setup_command(command) -> Control:
 def publish_command(command: Control) -> None:
     """
     Publish the command to get_robot_commands topic.
-
-    Parameters:
-    command -> String with speed and steer values.
     """
     global last_command
     try:
@@ -57,6 +54,14 @@ def publish_command(command: Control) -> None:
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not publish new command to /get_robot_commands")
+
+def publish_wheel_adjustment(data: WheelAdjustment) -> None:
+    try:
+        pub = rospy.Publisher("/wheel_adjustment", WheelAdjustment, queue_size=10)
+        pub.publish(data)
+    except Exception as e:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not publish new command to /wheel_adjustment")
     
 def get_ipv4() -> str:
     """
@@ -92,9 +97,21 @@ def get_robot_commands(ip: str):
     except Exception as e:
         pass
 
+def get_robot_commands_wheel(ip: str):
+    """
+    Get the command to control the robot from the app server.
+    Publish the command to ROS.
+    """
+    try:
+        data = json.loads(requests.get(ip).content.decode('utf-8'))
+        publish_wheel_adjustment(setup_command(data))
+    except Exception as e:
+        pass
+
 if __name__ == '__main__':
     try:
         ip: str = str("http://" + get_ipv4() +":3000/control")
+        ip_wheel_adjustment: str = str("http://" + get_ipv4() +":3000/manual_wheel_adjustment")
         if(ip != ""):
             while not rospy.is_shutdown():
                 get_robot_commands(ip)

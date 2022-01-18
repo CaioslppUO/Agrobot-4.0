@@ -6,6 +6,7 @@ import Control from './types/controlInterface';
 import { controlDefaultParams } from './types/controlInterface';
 import AutoModeParams from './types/autoModeParams';
 import { AutoModeDefaultParams } from './types/autoModeParams';
+import { Wheel_adjustment, wheel_adjustmentDefaultParams } from "./types/controlInterface";
 
 const app = express();
 const http = serverHttp.createServer(app);
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 let control: Control = controlDefaultParams;
 let autoModeData: AutoModeParams = AutoModeDefaultParams;
+let wheel_adjustment: Wheel_adjustment = wheel_adjustmentDefaultParams;
 
 
 /**
@@ -39,6 +41,14 @@ io.on('connection', (socket) => {
   socket.on('auto_mode_params_update', (data) => {
     autoModeData = data;
   });
+
+  /**
+   * EVENTO DE ATUALIZAÇÃO DO ESTADO DO AJUSTE MANUAL DAS RODAS
+   * Evento ativado pelo app, alterando a instancia "wheel_adjustment"
+   */
+  socket.on('manual_wheel_adjustment_update', (data) => {
+    wheel_adjustment = data;
+  })
 
   /**
    * EVENTO DE DESCONEXÃO COM O APLICATIVO
@@ -84,6 +94,14 @@ app.post('/send_to_app', (req, res) => {
   io.emit('data_from_robot', req.body);
   return res.json({ message: 'Ready' });
 });
+
+/**
+ * ROTA DE DO AJUSTE DAS RODAS
+ * Retorna o estado atual do ajuste das rodas
+ */
+app.get("/manual_wheel_adjustment", (req, res) => {
+  return res.json(wheel_adjustment);
+})
 
 /**
  * INICIALIZACAO DO SERVIDOR
