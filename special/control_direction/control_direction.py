@@ -16,6 +16,9 @@ import traceback
 log: Log = Log("control_direction.py")
 runtime_log: RuntimeLog = RuntimeLog("control_direction.py")
 
+# Variáveis de controle de publicação.
+pub: rospy.Publisher = rospy.Publisher("/control_direction", String, queue_size=10)
+
 try:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
@@ -69,14 +72,18 @@ def move(readValue: int, goTo: int):
     if(goTo >= 0 and goTo <= 180):
         if( (encoder > 180 and goTo < 90) or (encoder < 0 and goTo > 90) or (encoder <= 180 and encoder >= 0) ):
             if(goTo < 90 - dead_zone): # Go to left
-                turn_left()
-            elif(goTo > 90 + dead_zone): # Go to right
                 turn_right()
+                pub.publish("turn right")
+            elif(goTo > 90 + dead_zone): # Go to right
+                turn_left()
+                pub.publish("turn left")
             else: # Stop
                 stop()
+                pub.publish("stop")
         else:
             stop()
-            runtime_log.info("Wheels stopped because encoder value reached 999 or -999")
+            pub.publish("stop")
+            runtime_log.info("Wheels stopped because encoder value reached > 180 or < 0")
     else:
         log.warning("Invalid steer value: {0}.".format(goTo))
     if(readValue < 0 or readValue > 300):
