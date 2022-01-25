@@ -41,6 +41,22 @@ def setup_command(command) -> Control:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup Control command")
 
+def setup_wheel_command(command) -> WheelAdjustment:
+    """
+    Separate and assemble the command to control the robot.
+
+    Parameters:
+    command -> Json content with speed and steer values.
+    """
+    try:
+        cm: WheelAdjustment = WheelAdjustment()
+        cm.wheel = float(command["wheel"])
+        cm.direction = float(command["direction"])
+        return cm
+    except Exception as e:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not setup WheelAdjustment command")
+
 def publish_command(command: Control) -> None:
     """
     Publish the command to get_robot_commands topic.
@@ -104,7 +120,7 @@ def get_robot_commands_wheel(ip: str):
     """
     try:
         data = json.loads(requests.get(ip).content.decode('utf-8'))
-        publish_wheel_adjustment(setup_command(data))
+        publish_wheel_adjustment(setup_wheel_command(data))
     except Exception as e:
         pass
 
@@ -115,6 +131,7 @@ if __name__ == '__main__':
         if(ip != ""):
             while not rospy.is_shutdown():
                 get_robot_commands(ip)
+                get_robot_commands_wheel(ip_wheel_adjustment)
         else:
             log.error("Could not get ipv4.".format())
     except rospy.ROSInterruptException:
