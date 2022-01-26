@@ -50,7 +50,7 @@ def setup_wheel_command(command) -> WheelAdjustment:
     """
     try:
         cm: WheelAdjustment = WheelAdjustment()
-        cm.wheel = float(command["wheel"])
+        cm.wheel = int(command["wheel"])
         cm.direction = float(command["direction"])
         return cm
     except Exception as e:

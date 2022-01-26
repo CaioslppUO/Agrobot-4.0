@@ -41,34 +41,34 @@ motor_2: int = int(sys.argv[2]) # Raspberry pin for motor 2
 wheel_set_left = int(sys.argv[3]) # Number of the wheel_set for the left wheel
 wheel_set_right = int(sys.argv[4]) # Number of the wheel_set for the right wheel
 
-def stop(motor_1: bool = True, motor_2: bool = True) -> None:
+def stop(use_motor_1: bool = True, use_motor_2: bool = True) -> None:
     """
     Stop the motors.
     """
     if(gpio_imported):
-        if(motor_1):
+        if(use_motor_1):
             GPIO.output(motor_1, GPIO.LOW)
-        if(motor_2):
+        if(use_motor_2):
             GPIO.output(motor_2, GPIO.LOW)
 
-def turn_right(motor_1: bool = True, motor_2: bool = True) -> None:
+def turn_right(use_motor_1: bool = True, use_motor_2: bool = True) -> None:
     """
     Turn the motors to the right indefinitely.
     """
     if(gpio_imported):
-        if(motor_1):
+        if(use_motor_1):
             GPIO.output(motor_1, GPIO.LOW)
-        if(motor_2):
+        if(use_motor_2):
             GPIO.output(motor_2, GPIO.HIGH)
 
-def turn_left(motor_1: bool = True, motor_2: bool = True) -> None:
+def turn_left(use_motor_1: bool = True, use_motor_2: bool = True) -> None:
     """
     Turn the motors to the left indefinitely.
     """
     if(gpio_imported):
-        if(motor_1):
+        if(use_motor_1):
             GPIO.output(motor_1, GPIO.HIGH)
-        if(motor_2):
+        if(use_motor_2):
             GPIO.output(motor_2, GPIO.LOW)
 
 def move(readValue: int, goTo: int):
