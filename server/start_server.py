@@ -16,9 +16,30 @@ def on_connection():
 def on_control_update(data):
     emit("control_update_changed", data, broadcast=True)
 
+@socketio.on("power_motor")
+def on_power_motor(data):
+    emit("power_motor_changed", data, broadcast=True)
+
+@socketio.on("auto_mode_activated")
+def on_auto_mode_activated(data):
+    emit("auto_mode_activated_changed", data, broadcast=True)
+
+@socketio.on("module_activated")
+def on_module_activated(data):
+    emit("module_activated_changed", data, broadcast=True)
+
+@socketio.on("type_module_control")
+def on_type_module_control(data):
+    emit("type_module_control_changed", data, broadcast=True)
+
+
 @socketio.on("manual_wheel_adjustment_update")
 def on_control_update(data):
     emit("manual_wheel_adjustment_update_changed", data, broadcast=True)
+
+@socketio.on("auto_mode_params_update")
+def on_auto_mode_params_update(data):
+    emit("auto_mode_params_update_changed", data, broadcast=True)
 
 def start_server():
     socketio.run(app, host="0.0.0.0", port=3000)
