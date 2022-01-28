@@ -10,6 +10,7 @@ from agrobot_services.log import Log
 from agrobot.msg import Control, WheelAdjustment
 from shutil import which
 from agrobot_services.runtime_log import RuntimeLog
+import socketio
 
 # Directory variables
 current_directory: str = str(pathlib.Path(__file__).parent.absolute()) + "/"
@@ -24,38 +25,8 @@ runtime_log: RuntimeLog = RuntimeLog("get_robot_commands.py")
 # Command sending control 
 last_command = None
 
-def setup_command(command) -> Control:
-    """
-    Separate and assemble the command to control the robot.
-
-    Parameters:
-    command -> Json content with speed and steer values.
-    """
-    try:
-        cm: Control = Control()
-        cm.speed = float(command["speed"]) * float(command["limit"])
-        cm.steer = float(command["steer"])
-        cm.limit = float(command["limit"])
-        return cm
-    except Exception as e:
-        log.error(traceback.format_exc())
-        runtime_log.error("Could not setup Control command")
-
-def setup_wheel_command(command) -> WheelAdjustment:
-    """
-    Separate and assemble the command to control the robot.
-
-    Parameters:
-    command -> Json content with speed and steer values.
-    """
-    try:
-        cm: WheelAdjustment = WheelAdjustment()
-        cm.wheel = int(command["wheel"])
-        cm.direction = float(command["direction"])
-        return cm
-    except Exception as e:
-        log.error(traceback.format_exc())
-        runtime_log.error("Could not setup WheelAdjustment command")
+# Socketio connection handler
+sio = socketio.Client()
 
 def publish_command(command: Control) -> None:
     """
@@ -78,61 +49,53 @@ def publish_wheel_adjustment(data: WheelAdjustment) -> None:
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not publish new command to /wheel_adjustment")
-    
-def get_ipv4() -> str:
-    """
-    Return ipv4.
-    """
-    ip: str = ""
-    if(which("ifconfig") is not None):
-        try:
-            os.system("ifconfig | grep 'inet *.*.*.*' > " + current_directory + "ipv4.tmp")
-            with open(current_directory+"ipv4.tmp","r") as file:
-                line = file.readlines()
-                file.close()
-                line = line[0]
-                line = line.split("inet ")[1].split(" ")
-                ip = line[0]
-            if(os.path.exists(current_directory+"ipv4.tmp")):
-                os.system("rm " + current_directory+"ipv4.tmp")
-        except Exception as e:
-            log.error(traceback.format_exc())
-            runtime_log.error("Could not get IPV4")
-    else:
-        log.error("Could not find ifconfig tool. Please install package net-tools. {0}".format(traceback.format_exc()))
-    return str(ip)
 
-def get_robot_commands(ip: str):
+@sio.on("control_update_changed")
+def setup_command(command) -> None:
     """
-    Get the command to control the robot from the app server.
-    Publish the command to ROS.
+    Separate and assemble the command to control the robot.
+
+    Parameters:
+    command -> Json content with speed and steer values.
     """
     try:
-        data = json.loads(requests.get(ip).content.decode('utf-8'))
-        publish_command(setup_command(data))
+        cm: Control = Control()
+        cm.speed = float(command["speed"]) * float(command["limit"])
+        cm.steer = float(command["steer"])
+        cm.limit = float(command["limit"])
+        publish_command(cm)
     except Exception as e:
-        pass
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not setup Control command")
 
-def get_robot_commands_wheel(ip: str):
+@sio.on("manual_wheel_adjustment_update_changed")
+def setup_wheel_command(command) -> None:
     """
-    Get the command to control the robot from the app server.
-    Publish the command to ROS.
+    Separate and assemble the command to control the robot.
+
+    Parameters:
+    command -> Json content with speed and steer values.
     """
     try:
-        data = json.loads(requests.get(ip).content.decode('utf-8'))
-        publish_wheel_adjustment(setup_wheel_command(data))
+        cm: WheelAdjustment = WheelAdjustment()
+        cm.wheel = int(command["wheel"])
+        cm.direction = float(command["direction"])
+        publish_wheel_adjustment(cm)
     except Exception as e:
-        pass
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not setup WheelAdjustment command")
+
+def connect():
+    sio.connect('http://localhost:3000')
 
 if __name__ == '__main__':
     try:
-        ip: str = str("http://" + get_ipv4() +":3000/control")
-        ip_wheel_adjustment: str = str("http://" + get_ipv4() +":3000/manual_wheel_adjustment")
-        if(ip != ""):
-            while not rospy.is_shutdown():
-                get_robot_commands(ip)
-                get_robot_commands_wheel(ip_wheel_adjustment)
-        else:
-            log.error("Could not get ipv4.".format())
+        connected = False
+        while(not connected):
+            try:
+                connect()
+                connected = True
+            except Exception as e:
+                print("Tentando reconexão - get_robot_commands")
     except rospy.ROSInterruptException:
         log.warning("Roscore was interrupted.")

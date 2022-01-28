@@ -4,3 +4,7 @@ requests
 empy
 RPi.GPIO
 rich
+Flask==2.0.2
+Flask-SocketIO==5.1.1
+eventlet==0.33.0
+python-socketio[client]==5.5.1

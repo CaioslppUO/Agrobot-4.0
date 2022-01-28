@@ -1,13 +1,27 @@
 #!/usr/bin/env python3
 
 import os
-import pathlib
+from flask import Flask
+from flask_socketio import SocketIO, emit
 
-current_directory: str = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# Flask Server
+app = Flask(__name__)
+socketio = SocketIO(app)
 
+@socketio.on("connect")
+def on_connection():
+    print("New Connection")
+
+@socketio.on("control_update")
+def on_control_update(data):
+    emit("control_update_changed", data, broadcast=True)
+
+@socketio.on("manual_wheel_adjustment_update")
+def on_control_update(data):
+    emit("manual_wheel_adjustment_update_changed", data, broadcast=True)
 
 def start_server():
-    os.system("cd " + current_directory+" && yarn start& ")
+    socketio.run(app, host="0.0.0.0", port=3000)
 
 def close_port():
     try:
