@@ -192,6 +192,11 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     ROS_MASTER_URI=0
 }
 
+## Install service 
+sudo cp "$LOCAL_FOLDER/../service/agrobot.service" /etc/systemd/system
+sudo cp "$LOCAL_FOLDER/../service/start_agrobot.sh" /usr/bin
+sudo cp "$LOCAL_FOLDER/../service/attach.sh" $HOME 
+
 clear
 printf "      Feature                 Situation\n\n"
 if [ "$UBUNTU_DEPENDENCIES" == "1" ] 
