@@ -51,12 +51,12 @@ def publish_wheel_adjustment(data: WheelAdjustment) -> None:
         log.error(traceback.format_exc())
         runtime_log.error("Could not publish new command to /wheel_adjustment")
 
-def publish_module_activated(command: bool) -> None:
+def publish_module_activated(command: Bool) -> None:
     """
     Publish the command to power_motor topic.
     """
     try:
-        pub = rospy.Publisher("/module_activated", bool, queue_size=10)
+        pub = rospy.Publisher("/module_activated", Bool, queue_size=10)
         pub.publish(command)
     except Exception as e:
         log.error(traceback.format_exc())
@@ -106,7 +106,7 @@ def setup_module_activated(command) -> None:
     command -> Bool content with state motor..
     """
     try:
-        publish_module_activated(bool(command))
+        publish_module_activated(Bool(command))
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup power motor command")
