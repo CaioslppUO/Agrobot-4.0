@@ -11,6 +11,7 @@ from agrobot.msg import Control, WheelAdjustment
 from shutil import which
 from agrobot_services.runtime_log import RuntimeLog
 import socketio
+from std_msgs.msg import Bool
 
 # Directory variables
 current_directory: str = str(pathlib.Path(__file__).parent.absolute()) + "/"
@@ -97,7 +98,7 @@ def setup_wheel_command(command) -> None:
         runtime_log.error("Could not setup WheelAdjustment command")
 
 @sio.on("module_activated_changed")
-def setup_power_motor(command) -> None:
+def setup_module_activated(command) -> None:
     """
     Separate and assemble the command to motor the robot.
 

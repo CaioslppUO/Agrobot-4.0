@@ -6,6 +6,7 @@ Controla a comunicação com os relés que controlam módulos extras, através d
 """
 
 import sys,time,rospy
+from std_msgs.msg import Bool
 # Variáveis de controle de importação.
 gpio_imported: bool = False
 
@@ -22,24 +23,27 @@ except Exception as e:
 rospy.init_node("relay")
 
 ## Envia o sinal para o relé que liga ou desliga o módulo extra..
-def power_control_callback(data: bool) -> None:
+def power_control_callback(data: Bool) -> None:
     pinout: int = int(sys.argv[1])        
     try:
-        if(gpio_imported):
-            if(data):
+        if(data):
+            if(gpio_imported):
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setwarnings(False)
                 GPIO.setup(pinout, GPIO.OUT)
                 GPIO.output(pinout, GPIO.HIGH)
                 time.sleep(0.2)
             else:
+                print("LIGOU")
+        else:
+            if(gpio_imported):
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setwarnings(False)
                 GPIO.setup(pinout, GPIO.OUT)
                 GPIO.output(pinout, GPIO.LOW)
                 time.sleep(0.2)
-        else:
-            print("GPIO não importada")
+            else:
+                print("DESLIGOU")
     except Exception as e:
         print(str(e))
         
@@ -47,7 +51,7 @@ def power_control_callback(data: bool) -> None:
 
 ## Escuta comandos recebidos que devem ser enviados para o relé.
 def listen_relay() -> None:
-    rospy.Subscriber("power_motor", bool, power_control_callback)
+    rospy.Subscriber("power_motor", Bool, power_control_callback)
 
 if __name__ == "__main__":
     listen_relay()
