@@ -37,8 +37,6 @@ def power_control_callback(data: Bool) -> None:
         if(data.data):
             if(gpio_imported):
                 runtime_log.info("Relay On with gpio")
-                GPIO.setmode(GPIO.BOARD)
-                GPIO.setwarnings(False)
                 GPIO.setup(pinout, GPIO.OUT)
                 GPIO.output(pinout, GPIO.HIGH)
                 time.sleep(0.2)
@@ -47,8 +45,6 @@ def power_control_callback(data: Bool) -> None:
         else:
             if(gpio_imported):
                 runtime_log.info("Relay Off with gpio")
-                GPIO.setmode(GPIO.BOARD)
-                GPIO.setwarnings(False)
                 GPIO.setup(pinout, GPIO.OUT)
                 GPIO.output(pinout, GPIO.LOW)
                 time.sleep(0.2)
