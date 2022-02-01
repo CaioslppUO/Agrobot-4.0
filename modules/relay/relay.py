@@ -7,8 +7,15 @@ Controla a comunicação com os relés que controlam módulos extras, através d
 
 import sys,time,rospy
 from std_msgs.msg import Bool
+from agrobot_services.runtime_log import RuntimeLog
+from agrobot_services.log import Log
+import traceback
+
 # Variáveis de controle de importação.
 gpio_imported: bool = False
+
+log: Log = Log("relay.py")
+runtime_log: RuntimeLog = RuntimeLog("relay.py")
 
 try:
     import RPi.GPIO as GPIO
@@ -16,6 +23,7 @@ try:
     GPIO.setwarnings(False)
     gpio_imported = True
 except Exception as e:
+    runtime_log.error(str(e))
     print(str(e))
 
 
@@ -34,7 +42,7 @@ def power_control_callback(data: Bool) -> None:
                 GPIO.output(pinout, GPIO.HIGH)
                 time.sleep(0.2)
             else:
-                print("LIGOU")
+                runtime_log.info("Relay On")
         else:
             if(gpio_imported):
                 GPIO.setmode(GPIO.BOARD)
@@ -43,8 +51,9 @@ def power_control_callback(data: Bool) -> None:
                 GPIO.output(pinout, GPIO.LOW)
                 time.sleep(0.2)
             else:
-                print("DESLIGOU")
+                runtime_log.info("Relay Off")
     except Exception as e:
+        runtime_log.error(str(e))
         print(str(e))
         
 
@@ -52,7 +61,11 @@ def power_control_callback(data: Bool) -> None:
 ## Escuta comandos recebidos que devem ser enviados para o relé.
 def listen_relay() -> None:
     rospy.Subscriber("power_motor", Bool, power_control_callback)
+    rospy.spin()
 
 if __name__ == "__main__":
-    listen_relay()
-    rospy.spin()
+    try:
+        listen_relay()
+    except Exception as e:
+        log.error(traceback.format_exc())
+        runtime_log.error("command_center.py terminate");
