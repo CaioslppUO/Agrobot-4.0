@@ -244,7 +244,7 @@ sudo cp "$LOCAL_FOLDER/service/start_agrobot.sh" /usr/bin
 sudo cp "$LOCAL_FOLDER/service/attach.sh" $HOME 
 
 #clear
-printf "------------------------------------------------------------------------"
+echo "------------------------------------------------------------------------"
 if [ "$UBUNTU_DEPENDENCIES" == "1" ] 
     then
         printf "${BLUE}Dependencies${NC}                       ${GREEN}OK${NC}\n"
