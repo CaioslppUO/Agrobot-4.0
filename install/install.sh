@@ -67,7 +67,7 @@ mkdir -p $CATKIN/src/
 {
     # Virtual Env
     python3 -m venv $AGROBOT_ENV/
-    python3 -m pip install empy=3.3.4
+    python3 -m pip install empy==3.3.4
     source "$AGROBOT_ENV_BIN/activate"
     packages=$(cat "$LOCAL_FOLDER/req")
     for package in $packages
