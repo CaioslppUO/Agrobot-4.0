@@ -2,7 +2,7 @@
 Description=Starts Agrobot
 
 [Service]
-User=caioslpp
+User=labiot
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/bin/start_agrobot.sh
