@@ -14,13 +14,12 @@ SITE_PACKAGES="0"
 
 # Dependencies
 { ## Ubuntu
-    sudo apt install python3-pip &&
-    sudo apt install -y python3-venv &&
-    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - &&
-    sudo apt install -y nodejs &&
-    sudo npm install -g yarn &&
-    printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
-    UBUNTU_DEPENDENCIES="1"
+    sudo apt update &&
+        sudo apt install python3-pip &&
+        sudo apt install -y python3-venv &&
+        sudo apt install -y tmux &&
+        printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
+        UBUNTU_DEPENDENCIES="1"
 } || {
     ## Arch
     sudo pacman -S --noconfirm python-pip &&

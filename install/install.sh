@@ -20,11 +20,10 @@ if [ $1 == "--no-dependency" ]
         ARCH_DEPENDENCIES="1"
     else
         { ## Ubuntu
+        sudo apt update &&
         sudo apt install python3-pip &&
         sudo apt install -y python3-venv &&
-        curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - &&
-        sudo apt install -y nodejs &&
-        sudo npm install -g yarn &&
+        sudo apt install -y tmux &&
         printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
         UBUNTU_DEPENDENCIES="1"
     } || {
@@ -148,7 +147,6 @@ fi
 {
     ## Server for communication with app
     cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT" &&
-    cd "$AGROBOT/server" && yarn install &&
     SERVER="1"
 } || {
     SERVER="0"
