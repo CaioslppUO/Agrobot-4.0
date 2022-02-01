@@ -50,16 +50,16 @@ def publish_wheel_adjustment(data: WheelAdjustment) -> None:
         log.error(traceback.format_exc())
         runtime_log.error("Could not publish new command to /wheel_adjustment")
 
-def publish_module_activated(command: bool) -> None:
-    """
-    Publish the command to power_motor topic.
-    """
-    try:
-        pub = rospy.Publisher("/module_activated", bool, queue_size=10)
-        pub.publish(command)
-    except Exception as e:
-        log.error(traceback.format_exc())
-        runtime_log.error("Could not publish new command to /module_activated")
+#def publish_module_activated(command: bool) -> None:
+#    """
+#    Publish the command to power_motor topic.
+#    """
+#    try:
+#        pub = rospy.Publisher("/module_activated", bool, queue_size=10)
+#        pub.publish(command)
+#    except Exception as e:
+#        log.error(traceback.format_exc())
+#        runtime_log.error("Could not publish new command to /module_activated")
 
 @sio.on("control_update_changed")
 def setup_command(command) -> None:
@@ -96,19 +96,19 @@ def setup_wheel_command(command) -> None:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup WheelAdjustment command")
 
-@sio.on("module_activated_changed")
-def setup_power_motor(command) -> None:
-    """
-    Separate and assemble the command to motor the robot.
-
-    Parameters:
-    command -> Bool content with state motor..
-    """
-    try:
-        publish_module_activated(bool(command))
-    except Exception as e:
-        log.error(traceback.format_exc())
-        runtime_log.error("Could not setup power motor command")
+#@sio.on("module_activated_changed")
+#def setup_power_motor(command) -> None:
+#    """
+#    Separate and assemble the command to motor the robot.
+#
+#    Parameters:
+#    command -> Bool content with state motor..
+#    """
+#    try:
+#        publish_module_activated(bool(command))
+#    except Exception as e:
+#        log.error(traceback.format_exc())
+#        runtime_log.error("Could not setup power motor command")
 
 
 def connect():

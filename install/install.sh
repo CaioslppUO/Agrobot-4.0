@@ -70,6 +70,7 @@ mkdir -p $CATKIN/src/
     # Virtual Env
     python3 -m venv $AGROBOT_ENV/
     source "$AGROBOT_ENV_BIN/activate"
+    pip uninstall em
     packages=$(cat "$LOCAL_FOLDER/req")
     for package in $packages
     do
