@@ -34,24 +34,26 @@ rospy.init_node("relay")
 def power_control_callback(data: Bool) -> None:
     pinout: int = int(sys.argv[1])        
     try:
-        if(data):
+        if(data.data):
             if(gpio_imported):
+                runtime_log.info("Relay On with gpio")
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setwarnings(False)
                 GPIO.setup(pinout, GPIO.OUT)
                 GPIO.output(pinout, GPIO.HIGH)
                 time.sleep(0.2)
             else:
-                runtime_log.info("Relay On")
+                runtime_log.info("Relay On without gpio")
         else:
             if(gpio_imported):
+                runtime_log.info("Relay Off with gpio")
                 GPIO.setmode(GPIO.BOARD)
                 GPIO.setwarnings(False)
                 GPIO.setup(pinout, GPIO.OUT)
                 GPIO.output(pinout, GPIO.LOW)
                 time.sleep(0.2)
             else:
-                runtime_log.info("Relay Off")
+                runtime_log.info("Relay Off without gpio")
     except Exception as e:
         runtime_log.error(str(e))
         print(str(e))
@@ -60,7 +62,7 @@ def power_control_callback(data: Bool) -> None:
 
 ## Escuta comandos recebidos que devem ser enviados para o relé.
 def listen_relay() -> None:
-    rospy.Subscriber("power_motor", Bool, power_control_callback)
+    rospy.Subscriber("module_activated", Bool, power_control_callback)
     rospy.spin()
 
 if __name__ == "__main__":
@@ -68,4 +70,4 @@ if __name__ == "__main__":
         listen_relay()
     except Exception as e:
         log.error(traceback.format_exc())
-        runtime_log.error("command_center.py terminate");
+        runtime_log.error("relay.py terminate");
