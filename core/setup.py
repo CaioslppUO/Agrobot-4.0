@@ -23,7 +23,6 @@ parameters = {
     "APP_PRIORITY": "1000",
     "LIDAR_PRIORITY": "999",
     "GUARANTEED_COMMANDS": "50",
-    "GUARANTEED_COMMANDS": "50",
     # Control
     "USB_PORT1": "/dev/ttyACM0",
     "USB_PORT2": "/dev/ttyACM1",
@@ -32,14 +31,12 @@ parameters = {
     "SETUP_DONE": "True"
 }
 
-
 def setup_parameters() -> None:
     """
     Upload all parameters to ros.
     """
     for key in parameters:
         param.set_param(key, parameters[key])
-
 
 if __name__ == "__main__":
     try:
