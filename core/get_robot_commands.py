@@ -5,7 +5,7 @@
 Get control data from app server and send it to ROS server.
 """
 
-import rospy,os,pathlib,json,requests,traceback
+import rospy,pathlib,traceback
 from agrobot_services.log import Log
 from agrobot.msg import Control, WheelAdjustment
 from shutil import which
@@ -44,6 +44,9 @@ def publish_command(command: Control) -> None:
         runtime_log.error("Could not publish new command to /get_robot_commands")
 
 def publish_wheel_adjustment(data: WheelAdjustment) -> None:
+    """
+    Publish the command to wheel_adjustment topic.
+    """
     try:
         pub = rospy.Publisher("/wheel_adjustment", WheelAdjustment, queue_size=10)
         pub.publish(data)
@@ -53,7 +56,7 @@ def publish_wheel_adjustment(data: WheelAdjustment) -> None:
 
 def publish_module_activated(command: Bool) -> None:
     """
-    Publish the command to power_motor topic.
+    Publish the command to module_activated topic.
     """
     try:
         pub = rospy.Publisher("/module_activated", Bool, queue_size=10)

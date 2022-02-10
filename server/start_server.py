@@ -32,7 +32,6 @@ def on_module_activated(data):
 def on_type_module_control(data):
     emit("type_module_control_changed", data, broadcast=True)
 
-
 @socketio.on("manual_wheel_adjustment_update")
 def on_control_update(data):
     emit("manual_wheel_adjustment_update_changed", data, broadcast=True)
