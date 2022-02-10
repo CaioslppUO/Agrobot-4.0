@@ -13,7 +13,7 @@ ARCH_DEPENDENCIES="0"
 SITE_PACKAGES="0"
 
 # Dependencies
-if [ $1 == "--no-dependency" ] 
+if [ ! -z "$1" ] && [ $1 == "--no-dependency" ] 
     then
         echo "skipping dependency install."
         UBUNTU_DEPENDENCIES="1"
