@@ -90,8 +90,8 @@ if __name__ == "__main__":
         server = connect('localhost', priorities["HTTP_PORT"])
         t_connections = threading.Thread(target=storeConnections, args=())
         t_connections.start()
-        startThreadMotor("-1 "+priorities["USB_PORT1"])
-        startThreadMotor("1 "+priorities["USB_PORT2"])
+        startThreadMotor(priorities["USB_PORT1"])
+        startThreadMotor(priorities["USB_PORT2"])
         rospy.Subscriber('/control_robot', Control, send)
         rospy.spin()
     except Exception as e:
