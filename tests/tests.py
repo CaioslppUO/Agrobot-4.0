@@ -6,19 +6,30 @@ Execute all automated tests.
 
 from agrobot_services.param import Parameter
 from agrobot.msg import Control
-import socketio, time
+import socketio, time, rospy
 
-test_ok = True
-number_of_tests = 0
-number_of_successful_tests = 0
+# Socketio
+sio = socketio.Client()
 
+# Setup
+setup_test_ok = True
+
+# Server
+number_of_server_tests = 0
+number_of_successful_server_tests = 0
+
+# Get Robot Commands
+number_of_robot_commands_tests = 0
+number_of_successful_robot_commands_tests = 0
+
+# 
 
 def test_setup():
     """
     Test the setup.py script.
     """
-    global test_ok
-    test_ok = False
+    global setup_test_ok
+    setup_test_ok = False
     parameter = Parameter()
     parameter.wait_for_setup()
     parameters = [
@@ -33,11 +44,11 @@ def test_setup():
     try:
         for p in parameters:
             parameter.get_param(p)
-        test_ok = True
+        setup_test_ok = True
     except Exception as e:
-        test_ok = False
+        setup_test_ok = False
 
-    if(test_ok):
+    if(setup_test_ok):
         print("setup.py: OK")
     else:
         print("setup.py: NO")
@@ -47,57 +58,51 @@ def test_server():
     Test the server script.
     """
     # Socketio connection handler
-    global test_ok, number_of_successful_tests, number_of_tests
-    number_of_tests = 8
-    number_of_successful_tests = 0
-    test_ok = False
-    sio = socketio.Client()
-
-    @sio.on("connect")
-    def connect():
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+    global number_of_successful_server_tests, number_of_server_tests
+    number_of_server_tests = 7
+    number_of_successful_server_tests = 0
+    global sio
 
     @sio.on("control_update_changed")
     def control_update(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
 
     @sio.on("power_motor_changed")
     def power_motor(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
 
     @sio.on("auto_mode_activated_changed")
     def auto_mode(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
 
     @sio.on("module_activated_changed")
     def module(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
     
     @sio.on("type_module_control_changed")
     def type_control(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
 
     @sio.on("manual_wheel_adjustment_update_changed")
     def wheel_adjustment(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
 
     @sio.on("auto_mode_params_update_changed")
     def auto_mode_params(data):
-        global number_of_successful_tests
-        number_of_successful_tests += 1
+        global number_of_successful_server_tests
+        number_of_successful_server_tests += 1
         sio.disconnect()
 
     @sio.on("disconnect")
     def disconnect():
-        global number_of_successful_tests, number_of_tests
-        if(number_of_tests == number_of_successful_tests):
+        global number_of_successful_server_tests, number_of_server_tests
+        if(number_of_server_tests == number_of_successful_server_tests):
             print("start_server.py: OK")
         else:
             print("start_server.py: NO")
