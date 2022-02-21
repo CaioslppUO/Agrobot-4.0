@@ -2,7 +2,7 @@
 
 """
 @package encoder
-Read and process encoder values, publishing them into ROS.
+Process encoder values publishing them into ROS.
 """
 
 import rospy, sys
@@ -10,30 +10,11 @@ from std_msgs.msg import String
 from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
 import traceback
+from encoder_reader import read, set_pins
 
 # Log class
 log: Log = Log("encoder.py")
 runtime_log: RuntimeLog = RuntimeLog("encoder.py")
-
-try:
-    import RPi.GPIO as GPIO
-    gpio_imported: bool = True
-except Exception as e:
-    gpio_imported: bool = False
-    log.warning("Could not import RPi.GPIO. {0}".format(traceback.format_exc()))
-    runtime_log.warning("Could not import RPi.GPIO")
-
-# Encoder pins
-clk_pin = int(sys.argv[1]) # Green
-dt_pin = int(sys.argv[2]) # White
-runtime_log.info("Pin {0} set as Green and {1} as White".format(sys.argv[1], sys.argv[2]))
-
-# GPIO Configurations
-if(gpio_imported):
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(clk_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(dt_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Encoder node
 rospy.init_node('encoder', anonymous=True)
@@ -42,44 +23,7 @@ rospy.init_node('encoder', anonymous=True)
 pub: rospy.Publisher = rospy.Publisher("/encoder", String, queue_size=10)
 
 # Control variables
-last_clk = -1
-last_dt = -1
-count = 0
 last_published_value = 89
-
-def read_encoder():
-    """Read encoder values and process them.
-       Must have GPIO Library imported.
-    """
-    return GPIO.input(clk_pin),GPIO.input(dt_pin)
-
-def process_encoder_reading(clk,dt) -> int:
-    """
-    Process read values from encoder and update count value.
-    Must have GPIO Library imported.
-    """
-    global last_clk,last_dt,count
-    if(clk != last_clk or dt != last_dt):
-            if(clk == dt):
-                last_clk = clk
-                last_dt = dt
-                clk,dt = read_encoder()
-                while(last_clk == clk and last_dt == dt):
-                    clk,dt = read_encoder()
-                if(last_clk == 1):
-                    if(clk == 0 and dt == 1):
-                        count += 1
-                    elif(clk == 1 and dt == 0):
-                        count -= 1
-                elif(last_clk == 0):
-                    if(clk == 1 and dt == 0):
-                        count += 1
-                    elif(clk == 0 and dt == 1):
-                        count -= 1
-            else:
-                pass
-            last_clk = clk
-            last_dt = dt
 
 def publish_encoder(value: str) -> None:
     """Publish processed encoder value."""
@@ -88,9 +32,8 @@ def publish_encoder(value: str) -> None:
         pub.publish(value)
         last_published_value = value
 
-def convertToDegrees(value: str) -> str:
+def convertToDegrees(value: int) -> str:
     """Convert encoder value to degrees"""
-    value = int(value)
     if(value > 300):
         return -1
     elif(value < -300):
@@ -102,11 +45,10 @@ def convertToDegrees(value: str) -> str:
 
 if __name__ == '__main__':
     try:
+        set_pins(int(sys.argv[1]), int(sys.argv[2]))
         while not rospy.is_shutdown():
-            if(gpio_imported):
-                clk,dt = read_encoder()
-                process_encoder_reading(clk,dt)
-                publish_encoder(convertToDegrees(str(count)))
+            encoder = read() # Read data from encoder
+            publish_encoder(convertToDegrees(encoder)) # Publish encoder data to ROS
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("encoder.py terminated")
