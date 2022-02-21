@@ -16,13 +16,14 @@ float direction = 1;
 
 void keepReceiving(BLDC motor) {
     while (true) {
+        // motor.set_Duty(direction*stof(Client::receive()));
         // motor.set_Duty(stof(Client::receive()));
         motor.set_Current_Unscaled(stof(Client::receive()));
     }
 }
 
 int main(int argc, char* argv[]) {
-
+    direction = atoi((char*)argv[argc - 2]);
     // Initialize the Serial interface
     BLDC::init((char*)argv[argc - 1]);
     BLDC leftMotor(VESC1, motor3);
