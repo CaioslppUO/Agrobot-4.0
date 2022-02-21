@@ -13,25 +13,17 @@
 using namespace std;
 
 float direction = 1;
-int input;
-
-void keepReceiving(BLDC motor) {
-    while (true) {
-        // motor.set_Duty(direction*stof(Client::receive()));
-        // motor.set_Duty(stof(Client::receive()));
-        motor.set_Current_Unscaled(stof(Client::receive()));
-    }
-}
+float input;
 
 int main(int argc, char* argv[]) {
     // Initialize the Serial interface
-    BLDC::init((char*)"/dev/ttyUSB0");
-    BLDC leftMotor(VESC1, motor3);
+    BLDC::init((char*)"/dev/ttyACM0");
+    BLDC leftMotor(VESC1, motor1);
 
-    
-    while (true){
-      std::cin >> input;
-      motor.set_Current_Unscaled(intput);
+
+    while (true) {
+        std::cin >> input;
+        leftMotor.set_Current_Unscaled(input);
     }
     leftMotor.apply_Brake(3);
     BLDC::close();

@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     direction = atoi((char*)argv[argc - 2]);
     // Initialize the Serial interface
     BLDC::init((char*)argv[argc - 1]);
-    BLDC leftMotor(VESC1, motor3);
+    BLDC leftMotor(VESC1, motor1);
 
     // Initialize server
     Client::connect();
