@@ -3,8 +3,10 @@
 import os
 import pathlib
 import pwd
+from shutil import ExecError
 import threading
 import threading
+from time import sleep
 import rospy
 from communication.server import wait_for_connection, connect
 from agrobot.msg import Control
@@ -59,7 +61,7 @@ def storeConnections():
     """
     Store connections socket 
     """
-    global connections, address
+    global connections, address, server
     while True:
         conn, addr = wait_for_connection(server)
         connections.append(conn)
@@ -71,8 +73,12 @@ def startThreadMotor(port: str):
     Start threads that store program in C that controls Vesc
     """
     global t_motor
+    sleep(5) #Pensar em uma logica para remover isso
+             #Cliente esta tentando conectar no servidor
+             #sem ele ter subido, causando erro na conexão.
     t_motor.append(threading.Thread(target=startMotor, args=[port]))
     t_motor[len(t_motor)-1].start()
+    print(port + " connected in server.")
 
 
 def startMotor(args):
