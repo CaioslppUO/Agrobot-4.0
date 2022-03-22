@@ -36,13 +36,18 @@ int main(int argc, char* argv[]) {
     BLDC::init((char*)argv[argc - 1]);
     BLDC leftMotor(VESC1, motor1);
 
-
-    boost::asio::io_service io_service;
-    tcp::socket socketServer(io_service);
-    socketServer.connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 3000));
-    std::thread read_t(keepReceiving, leftMotor, &socketServer);
-
-
+    while (true) {
+        try {
+            boost::asio::io_service io_service;
+            tcp::socket socketServer(io_service);
+            socketServer.connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 3000));
+            std::thread read_t(keepReceiving, leftMotor, &socketServer);
+            break;
+        }
+        catch (exception e) {
+            std::cout << "Server not found.\n";
+        }
+    }
     while (true)
         ;
     leftMotor.apply_Brake(3);
