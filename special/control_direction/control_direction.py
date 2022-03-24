@@ -20,24 +20,29 @@ RANGE = 2048 # Values go from -2048 to +2048
 MODE_EQUAL = "EQUAL"
 MODE_INDIVIDUAL = "INDIVIDUAL"
 
-port = serial.Serial('/dev/ttyACM0', 9600) # Port for serial communication
+log: Log = Log("control_direction.py")
+runtime_log: RuntimeLog = RuntimeLog("control_direction.py")
+
+rospy.init_node("control_direction", anonymous=True)
+
+try:
+    port = serial.Serial('/dev/ttyACM0', 9600) # Port for serial communication
+except Exception as e:
+        port = False
+        log.error(traceback.format_exc())
+        #runtime_log.error(traceback.format_exc())
 
 def _write(msg: str) -> None:
     """
     Write in the serial port.
     Automatically transform to bytes and insert \r\n at the end.
     """
-    port.write(b'{0}\r\n'.format(msg))
+    if(port):
+        port.write(str('{}\r\n'.format(msg)).encode())
 
 def turn_motor(motor: str, speed: int = 0) -> None:
     if(speed >= -RANGE and speed <= RANGE):
-        _write("{0}: {1}".format(motor, speed))
-
-def turn_left(motor: str) -> None:
-    turn_motor(motor, -RANGE)
-
-def turn_right(motor: str) -> None:
-    turn_motor(motor, RANGE)
+        _write("{0}: {1}".format(motor, int(speed)))
 
 def set_control_mode(mode: str, left: int, right: int) -> None:
     if(mode == MODE_EQUAL):
@@ -45,7 +50,7 @@ def set_control_mode(mode: str, left: int, right: int) -> None:
     elif(mode == MODE_INDIVIDUAL):
         return (MOTOR_1, left, MOTOR_2, right)
     else:
-        raise("Control mode not found")
+        raise Exception("Control mode not found")
 
 def move_callback(command: Control) -> None:
     """
@@ -53,9 +58,8 @@ def move_callback(command: Control) -> None:
     """
     try:
         steer = command.steer * RANGE # Speed at which the motor will turn
-
         # Turning both motors (Control mode should work here)
-        m1, s1, m2, s2 = set_control_mode(0, steer, steer)
+        m1, s1, m2, s2 = set_control_mode(MODE_EQUAL, steer, steer)
         turn_motor(m1, s1)
         turn_motor(m2, s2)
     except Exception as e:
