@@ -134,7 +134,7 @@ def setup_module_activated(mode: str) -> None:
     mode -> The mode in which the robot should turn (A, B, C)
     """
     try:
-        publish_module_activated(command)
+        publish_module_activated(mode)
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup power motor command")
