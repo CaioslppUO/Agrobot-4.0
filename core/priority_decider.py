@@ -92,7 +92,6 @@ def listen(topic: str, priority: int) -> None:
 def add_listeners_and_listen() -> None:
     """
     Add all topics to be listened and listen to them.
-
     Parameters:
     """
     global current_command
@@ -103,7 +102,6 @@ def add_listeners_and_listen() -> None:
     for key in topics:
         listen(str(key), int(topics[key]))
     rospy.spin()
-
 
 if __name__ == "__main__":
     try:

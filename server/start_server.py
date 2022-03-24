@@ -40,6 +40,10 @@ def on_manual_wheel_adjustment_update(data):
 def on_auto_mode_params_update(data):
     emit("auto_mode_params_update_changed", data, broadcast=True)
 
+@socketio.on("control_mode_update")
+def on_auto_mode_params_update(data):
+    emit("control_mode_changed", data, broadcast=True)
+
 def start_server():
     socketio.run(app, host="0.0.0.0", port=3000)
 

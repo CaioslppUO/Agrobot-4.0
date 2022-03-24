@@ -11,7 +11,7 @@ from agrobot.msg import Control, WheelAdjustment
 from shutil import which
 from agrobot_services.runtime_log import RuntimeLog
 import socketio
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 
 # Directory variables
 current_directory: str = str(pathlib.Path(__file__).parent.absolute()) + "/"
@@ -65,6 +65,17 @@ def publish_module_activated(command: Bool) -> None:
         log.error(traceback.format_exc())
         runtime_log.error("Could not publish new command to /module_activated")
 
+def publish_mode_changed(mode: str) -> None:
+    """
+    Publish the command to change_mode topic.
+    """
+    try:
+        pub = rospy.Publisher("/change_mode", String, queue_size=10)
+        pub.publish(mode)
+    except Exception as e:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not publish new command to /change_mode")
+
 @sio.on("control_update_changed")
 def setup_command(command) -> None:
     """
@@ -110,6 +121,20 @@ def setup_module_activated(command) -> None:
     """
     try:
         publish_module_activated(Bool(command))
+    except Exception as e:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not setup power motor command")
+
+@sio.on("control_mode_changed")
+def setup_module_activated(mode: str) -> None:
+    """
+    Update in which mode the robot should turn (A, B, C).
+
+    Parameters:
+    mode -> The mode in which the robot should turn (A, B, C)
+    """
+    try:
+        publish_module_activated(command)
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup power motor command")
