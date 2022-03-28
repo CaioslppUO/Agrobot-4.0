@@ -27,6 +27,12 @@ MODE_B = "B"
 MODE_C = "C"
 CONTROL_MODE = "C"
 
+# Encoder
+ENCODER_1 = 90 # 90 means centralized
+ENCODER_2 = 90 
+ENCODER_3 = 90
+ENCODER_4 = 90
+
 log: Log = Log("control_direction.py")
 runtime_log: RuntimeLog = RuntimeLog("control_direction.py")
 
@@ -46,6 +52,8 @@ def _write(msg: str) -> None:
     """
     if(port):
         port.write(str('{}\r\n'.format(msg)).encode())
+    else:
+        runtime_log.warning("Could not send control_direction to robot, but it would send {0}.".format(msg))
 
 def turn_motor(motor: str, speed: int = 0) -> None:
     if(speed >= -RANGE and speed <= RANGE):
@@ -55,6 +63,8 @@ def set_control_mode(mode: str, left: int, right: int) -> None:
     if(mode == MODE_A): # Only fron wheels turn
         if(WHEEL_SET == WHEEL_SET_FRONT):
             return (MOTOR_1, left, MOTOR_2, left)
+        else:
+            return (MOTOR_1, 0, MOTOR_2, 0)
     elif(mode == MODE_B): # Both turn
         return (MOTOR_1, left, MOTOR_2, right)
     elif(mode == MODE_C): # Oposite directions
@@ -62,6 +72,8 @@ def set_control_mode(mode: str, left: int, right: int) -> None:
             return (MOTOR_1, left, MOTOR_2, right)
         elif(WHEEL_SET == WHEEL_SET_BACK):
             return (MOTOR_1, -left, MOTOR_2, -right)
+        else:
+            raise Exception("WHEEL_SET is not a valid value")
     else:
         raise Exception("Control mode not found")
 
@@ -86,13 +98,32 @@ def control_mode_callback(mode) -> None:
     global CONTROL_MODE
     CONTROL_MODE = str(mode.data)
 
+def encoder_callback(value: String, encoder: int) -> None:
+    """
+    Update the value of the first encoder
+    """
+    global ENCODER_1, ENCODER_2, ENCODER_3, ENCODER_4
+    if(encoder == 1):
+        ENCODER_1 = value.data
+    elif(encoder == 2):
+        ENCODER_2 = value.data
+    elif(encoder == 3):
+        ENCODER_3 = value.data
+    elif(encoder == 4):
+        ENCODER_4 = value.data
+    else:
+        raise Exception("Unkown encoder number")
+
 def listen_topics() -> None:
     """
     Listen to the topics needed to control the direction.
     """
     rospy.Subscriber("/change_mode", String, control_mode_callback)
     rospy.Subscriber("/control_robot", Control, move_callback)
-
+    rospy.Subscriber("/encoder_1", String, encoder_callback, (1))
+    rospy.Subscriber("/encoder_2", String, encoder_callback, (2))
+    rospy.Subscriber("/encoder_3", String, encoder_callback, (3))
+    rospy.Subscriber("/encoder_4", String, encoder_callback, (4))
     rospy.spin()
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ def publish_encoder(value: str) -> None:
         last_published_value = value
 
 def convertToDegrees(value: int) -> str:
-    """Convert encoder value to degrees"""
+    """Convert encoder value to degrees - 0 -> 180"""
     if(value > 300):
         return -1
     elif(value < -300):
