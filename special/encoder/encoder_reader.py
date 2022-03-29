@@ -83,10 +83,19 @@ def __process_encoder_reading(clk, dt) -> int:
             last_dt = dt
     return count
 
+DETECT_READ_ERROR = False
+
 def read() -> int:
     """
     Read, process and return the encoder value.
     """
-    global clk_pin, dt_pin
-    clk, dt = __read_encoder()
-    return __process_encoder_reading(clk, dt)
+    try:
+        global clk_pin, dt_pin, DETECT_READ_ERROR
+        clk, dt = __read_encoder()
+        return __process_encoder_reading(clk, dt)
+    except Exception as e:
+        if(not DETECT_READ_ERROR):
+            log.error(traceback.format_exc())
+            runtime_log.error(traceback.format_exc())
+            DETECT_READ_ERROR = True
+        return 0

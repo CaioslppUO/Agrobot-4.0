@@ -32,6 +32,9 @@ ENCODER_1 = 90 # 90 means centralized
 ENCODER_2 = 90 
 ENCODER_3 = 90
 ENCODER_4 = 90
+TURN_LIMIT = 25
+ENCODER_MAX = 180
+ENCODER_MIN = 0
 
 log: Log = Log("control_direction.py")
 runtime_log: RuntimeLog = RuntimeLog("control_direction.py")
@@ -84,9 +87,26 @@ def move_callback(command: Control) -> None:
     try:
         steer = command.steer * RANGE # Speed at which the motor will turn
         # Turning both motors (Control mode should work here)
-        m1, s1, m2, s2 = set_control_mode(CONTROL_MODE, steer, steer)
-        turn_motor(m1, s1)
-        turn_motor(m2, s2)
+        m1, spd1, m2, spd2 = set_control_mode(CONTROL_MODE, steer, steer)
+        # Encoder Verification
+        if(WHEEL_SET == WHEEL_SET_FRONT): # Encoder 1 and Encoder 2
+            if(ENCODER_1 > ENCODER_MIN + TURN_LIMIT and ENCODER_1 < ENCODER_MAX - TURN_LIMIT):
+                turn_motor(m1, spd1)
+            else:
+                runtime_log.log("Can't turn motor_1 because encoder_1 would be out of range")
+            if(ENCODER_2 > ENCODER_MIN + TURN_LIMIT and ENCODER_2 < ENCODER_MAX - TURN_LIMIT):
+                turn_motor(m2, spd2)
+            else:
+                runtime_log.log("Can't turn motor_2 because encoder_2 would be out of range")
+        elif(WHEEL_SET == WHEEL_SET_BACK): # Encoder 3 and Encoder 4
+            if(ENCODER_3 > ENCODER_MIN + TURN_LIMIT and ENCODER_3 < ENCODER_MAX - TURN_LIMIT):
+                turn_motor(m1, spd1)
+            else:
+                runtime_log.log("Can't turn motor_3 because encoder_3 would be out of range")
+            if(ENCODER_4 > ENCODER_MIN + TURN_LIMIT and ENCODER_4 < ENCODER_MAX - TURN_LIMIT):
+                turn_motor(m2, spd2)
+            else:
+                runtime_log.log("Can't turn motor_4 because encoder_4 would be out of range")
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error(traceback.format_exc())

@@ -22,6 +22,7 @@ if [ ! -z "$1" ] && [ $1 == "--no-dependency" ]
         { ## Ubuntu
         sudo apt update &&
         sudo apt install -y python3-pip python3-venv tmux python3-defusedxml &&
+        sudo apt install -y mosquitto &&
         printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
         UBUNTU_DEPENDENCIES="1"
     } || {
@@ -204,8 +205,8 @@ done
 
 ## Special nodes in roslauch
 echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction' args='0' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1' args='7 13' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2' args='29 31' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1' args='7 13 encoder_1' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2' args='29 31 encoder_2' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='screen' />" >> run.launch
 
 

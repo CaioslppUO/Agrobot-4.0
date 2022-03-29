@@ -20,7 +20,8 @@ runtime_log: RuntimeLog = RuntimeLog("encoder.py")
 rospy.init_node('encoder', anonymous=True)
 
 # Variáveis de controle de publicação.
-pub: rospy.Publisher = rospy.Publisher("/encoder", String, queue_size=10)
+TOPIC_TO_PUB: str = sys.argv[3] # Topic to publish the encoder value
+pub: rospy.Publisher = rospy.Publisher("/{}".format(TOPIC_TO_PUB), String, queue_size=10)
 
 # Control variables
 last_published_value = 89
