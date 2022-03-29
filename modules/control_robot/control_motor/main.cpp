@@ -13,7 +13,7 @@
 
 using namespace std;
 
-BLDC leftMotor(VESC1, motor1);
+BLDC* motor;
 
 void on_connect(struct mosquitto* mosq, void* obj, int rc) {
     if (rc) {
@@ -24,12 +24,13 @@ void on_connect(struct mosquitto* mosq, void* obj, int rc) {
 }
 
 void on_message(struct mosquitto* mosq, void* obj, const struct mosquitto_message* msg) {
-    leftMotor.set_Duty(stof((char*)msg->payload));
+    motor->set_Duty(stof((char*)msg->payload));
 }
 
 int main(int argc, char* argv[]) {
     // Initialize the Serial interface
     BLDC::init((char*)argv[argc - 1]);
+    motor = new BLDC(VESC1, motor1);
 
     int rc, id = 12;
 
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]) {
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
 
-    leftMotor.apply_Brake(3);
+    motor->apply_Brake(3);
     BLDC::close();
     return 0;
 }
