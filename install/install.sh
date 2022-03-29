@@ -22,7 +22,7 @@ if [ ! -z "$1" ] && [ $1 == "--no-dependency" ]
         { ## Ubuntu
         sudo apt update &&
         sudo apt install -y python3-pip python3-venv tmux python3-defusedxml &&
-        sudo apt install -y mosquitto &&
+        sudo apt install -y mosquitto mosquitto-clients libmosquitto-dev &&
         printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
         UBUNTU_DEPENDENCIES="1"
     } || {
