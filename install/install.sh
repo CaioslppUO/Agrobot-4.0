@@ -155,7 +155,7 @@ fi
     ## Modules
     cd "$AGROBOT/src/" && mkdir -p modules &&
     cd "$LOCAL_FOLDER/../modules/" &&
-    g++ control_robot/control_motor/*.c* -lboost_system -pthread -o control_robot/communication/controller.out &&
+    g++ control_robot/control_motor/*.c* -lboost_system -pthread -lmosquitto -o control_robot/communication/controller.out &&
     chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
     MODULES="1"
 } || {
