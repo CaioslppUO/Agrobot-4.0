@@ -5,32 +5,59 @@
 
 #include "bldc.h"
 #include "motortypes.h"
-#include "client.h"
 #include <thread>
 #include <cstring>
 #include <string.h>
 
+#include <mosquitto.h>
+
 using namespace std;
 
-void keepReceiving(BLDC motor) {
-    while (true) {
+BLDC* motor;
 
-        motor.set_Duty(stof(Client::receive()));
+void on_connect(struct mosquitto* mosq, void* obj, int rc) {
+    if (rc) {
+        printf("Error with result code: %d\n", rc);
+        exit(-1);
     }
+    mosquitto_subscribe(mosq, NULL, "#", 0);
+}
+
+void on_message(struct mosquitto* mosq, void* obj, const struct mosquitto_message* msg) {
+    motor->set_Duty(stof((char*)msg->payload));
 }
 
 int main(int argc, char* argv[]) {
     // Initialize the Serial interface
     BLDC::init((char*)argv[argc - 1]);
-    BLDC leftMotor(VESC1, motor1);
+    motor = new BLDC(VESC1, motor1);
 
-    // Initialize server
-    Client::connect();
+    int rc, id = 12;
 
-    std::thread read_t(keepReceiving, leftMotor);
-    while (true)
+    mosquitto_lib_init();
+
+    struct mosquitto* mosq;
+
+    mosq = mosquitto_new("subscribe-vesc", true, &id);
+    mosquitto_connect_callback_set(mosq, on_connect);
+    mosquitto_message_callback_set(mosq, on_message);
+
+    rc = mosquitto_connect(mosq, "localhost", 1883, 60);
+    if (rc) {
+        printf("Could not connect to Broker with return code %d\n", rc);
+        return -1;
+    }
+
+    mosquitto_loop_start(mosq);
+    while (1)
         ;
-    leftMotor.apply_Brake(3);
+
+    mosquitto_loop_stop(mosq, true);
+    mosquitto_disconnect(mosq);
+    mosquitto_destroy(mosq);
+    mosquitto_lib_cleanup();
+
+    motor->apply_Brake(3);
     BLDC::close();
     return 0;
 }

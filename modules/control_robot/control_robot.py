@@ -6,13 +6,13 @@ import pwd
 from shutil import ExecError
 import threading
 import threading
-from time import sleep
 import rospy
 from communication.server import wait_for_connection, connect
 from agrobot.msg import Control
 from agrobot_services.log import Log
 from agrobot_services.param import Parameter
 import traceback
+import paho.mqtt.client as paho
 
 
 # Parameter class
@@ -32,10 +32,10 @@ rospy.init_node("control_robot", anonymous=True)
 
 
 # Global variables
-connections = []
-address = []
 t_motor = []
 priorities: dict = {}
+client = paho.Client()
+
 
 def get_rosparam_priorities() -> None:
     """
@@ -47,25 +47,14 @@ def get_rosparam_priorities() -> None:
     priorities.update({"HTTP_PORT": int(param.get_param("HTTP_PORT"))})
 
 # Function that communicates with socket server
+
+
 def send(msg: Control) -> None:
     """
     Send command to socket client in C
     """
-    for con in connections:
-        con.send(str(msg.speed).encode('utf-8'))
 
-# Function that read and store clients connected with server
-
-
-def storeConnections():
-    """
-    Store connections socket 
-    """
-    global connections, address, server
-    while True:
-        conn, addr = wait_for_connection(server)
-        connections.append(conn)
-        address.append(addr)
+    client.publish("command/vesc", str(msg.speed))
 
 
 def startThreadMotor(port: str):
@@ -73,12 +62,9 @@ def startThreadMotor(port: str):
     Start threads that store program in C that controls Vesc
     """
     global t_motor
-    sleep(5) #Pensar em uma logica para remover isso
-             #Cliente esta tentando conectar no servidor
-             #sem ele ter subido, causando erro na conexão.
     t_motor.append(threading.Thread(target=startMotor, args=[port]))
     t_motor[len(t_motor)-1].start()
-    print(port + " connected in server.")
+    print(port + " started instance.")
 
 
 def startMotor(args):
@@ -93,9 +79,8 @@ if __name__ == "__main__":
     try:
         param.wait_for_setup()
         get_rosparam_priorities()
-        server = connect('localhost', priorities["HTTP_PORT"])
-        t_connections = threading.Thread(target=storeConnections, args=())
-        t_connections.start()
+        if client.connect("localhost", 1883, 60) != 0:
+            raise Exception("Could not connect to MQTT Broker!")
         startThreadMotor(priorities["USB_PORT1"])
         startThreadMotor(priorities["USB_PORT2"])
         rospy.Subscriber('/control_robot', Control, send)
@@ -103,6 +88,4 @@ if __name__ == "__main__":
     except Exception as e:
         for u_motor in t_motor:
             u_motor.close()
-        for con in connections:
-            con.close()
         log.error(traceback.format_exc())
