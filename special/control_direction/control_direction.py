@@ -134,16 +134,24 @@ def encoder_callback(value: String, encoder: int) -> None:
     else:
         raise Exception("Unkown encoder number")
 
+COULD_NOT_LISTEN_ENCODER = False
+
 def listen_topics() -> None:
     """
     Listen to the topics needed to control the direction.
     """
     rospy.Subscriber("/change_mode", String, control_mode_callback)
     rospy.Subscriber("/control_robot", Control, move_callback)
-    rospy.Subscriber("/encoder_1", String, encoder_callback, (1))
-    rospy.Subscriber("/encoder_2", String, encoder_callback, (2))
-    rospy.Subscriber("/encoder_3", String, encoder_callback, (3))
-    rospy.Subscriber("/encoder_4", String, encoder_callback, (4))
+    if(WHEEL_SET == WHEEL_SET_FRONT):
+        rospy.Subscriber("/encoder_1", String, encoder_callback, (1))
+        rospy.Subscriber("/encoder_2", String, encoder_callback, (2))
+    elif(WHEEL_SET == WHEEL_SET_BACK):
+        rospy.Subscriber("/encoder_3", String, encoder_callback, (3))
+        rospy.Subscriber("/encoder_4", String, encoder_callback, (4))
+    else:
+        if(not COULD_NOT_LISTEN_ENCODER):
+            log.error("Could not listen to encoder because WHEEL_SET was not defined or was wrong")
+            runtime_log.error("Could not listen to encoder because WHEEL_SET was not defined or was wrong")
     rospy.spin()
 
 if __name__ == "__main__":
