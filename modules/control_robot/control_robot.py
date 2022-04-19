@@ -42,9 +42,8 @@ def get_rosparam_priorities() -> None:
     Get priorities from rosparam.
     """
     global priorities
-    priorities.update({"USB_PORT1": param.get_param("USB_PORT1")})
-    priorities.update({"USB_PORT2": param.get_param("USB_PORT2")})
-    priorities.update({"HTTP_PORT": int(param.get_param("HTTP_PORT"))})
+    priorities.update({"USB_PORT1": param.get_param("USB_PORT_VESC1")})
+    priorities.update({"USB_PORT2": param.get_param("USB_PORT_VESC2")})
 
 # Function that communicates with socket server
 
