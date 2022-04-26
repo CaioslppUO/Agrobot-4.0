@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
     struct mosquitto* mosq;
 
-    mosq = mosquitto_new("subscribe-vesc", true, &id);
+    mosq = mosquitto_new(nullptr, true, &id);//id null para não ter problema nas várias instancias 
     mosquitto_connect_callback_set(mosq, on_connect);
     mosquitto_message_callback_set(mosq, on_message);
 
