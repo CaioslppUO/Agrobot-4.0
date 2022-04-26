@@ -60,15 +60,6 @@ def get_rosparam_priorities() -> None:
         {"USB_PORT_SABERTOOTH": param.get_param("USB_PORT_SABERTOOTH")})
 
 
-try:
-    # Port for serial communication
-    port = serial.Serial(priorities["USB_PORT_SABERTOOTH"], 9600)
-except Exception as e:
-    port = False
-    log.error(traceback.format_exc())
-    # runtime_log.error(traceback.format_exc())
-
-
 def _write(msg: str) -> None:
     """
     Write in the serial port.
@@ -86,19 +77,19 @@ def turn_motor(motor: str, speed: int = 0) -> None:
         _write("{0}: {1}".format(motor, int(speed)))
 
 
-def set_control_mode(mode: str, left: int, right: int) -> None:
+def set_control_mode(mode: str, left: int, right: int) -> tuple:
     if(mode == MODE_A):  # Only fron wheels turn
         if(WHEEL_SET == WHEEL_SET_FRONT):
-            return (MOTOR_1, left, MOTOR_2, left)
+            return (MOTOR_1, left, MOTOR_2, -left)
         else:
             return (MOTOR_1, 0, MOTOR_2, 0)
     elif(mode == MODE_B):  # Both turn
-        return (MOTOR_1, left, MOTOR_2, right)
+        return (MOTOR_1, left, MOTOR_2, -right)
     elif(mode == MODE_C):  # Oposite directions
         if(WHEEL_SET == WHEEL_SET_FRONT):
-            return (MOTOR_1, left, MOTOR_2, right)
+            return (MOTOR_1, left, MOTOR_2, -right)
         elif(WHEEL_SET == WHEEL_SET_BACK):
-            return (MOTOR_1, -left, MOTOR_2, -right)
+            return (MOTOR_1, -left, MOTOR_2, right)
         else:
             raise Exception("WHEEL_SET is not a valid value")
     else:
@@ -163,7 +154,7 @@ def encoder_callback(value: String, encoder: int) -> None:
     elif(encoder == 4):
         ENCODER_4 = value.data
     else:
-        raise Exception("Unkown encoder number")
+        raise Exception("Unknown encoder number")
 
 
 COULD_NOT_LISTEN_ENCODER = False
@@ -192,6 +183,13 @@ def listen_topics() -> None:
 
 if __name__ == "__main__":
     try:
+        get_rosparam_priorities()
+        try:
+            # Port for serial communication
+            port = serial.Serial(priorities["USB_PORT_SABERTOOTH"], 9600)
+        except Exception as e:
+            port = False
+            log.error(traceback.format_exc())
         listen_topics()
     except Exception as e:
         log.error(traceback.format_exc())
