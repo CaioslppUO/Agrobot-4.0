@@ -9,7 +9,6 @@ NC='\033[0m'
 
 # Install Control
 UBUNTU_DEPENDENCIES="0"
-ARCH_DEPENDENCIES="0"
 SITE_PACKAGES="0"
 
 # Dependencies
@@ -17,7 +16,6 @@ if [ ! -z "$1" ] && [ $1 == "--no-dependency" ]
     then
         echo "skipping dependency install."
         UBUNTU_DEPENDENCIES="1"
-        ARCH_DEPENDENCIES="1"
     else
         { ## Ubuntu
         sudo apt update &&
@@ -26,14 +24,7 @@ if [ ! -z "$1" ] && [ $1 == "--no-dependency" ]
         printf "${PURPLE}Instaled dependencies for Ubuntu Linux${NC}\n" &&
         UBUNTU_DEPENDENCIES="1"
     } || {
-        ## Arch
-        sudo pacman -S --noconfirm python-pip &&
-        sudo pacman -S --noconfirm python-virtualenv &&
-        sudo pacman -S --noconfirm nodejs &&
-        sudo pacman -S --noconfirm npm &&
-        sudo npm install -g yarn &&
-        printf "${PURPLE}Instaled dependencies for Arch Linux${NC}\n" &&
-        ARCH_DEPENDENCIES="1"
+        UBUNTU_DEPENDENCIES="0"
     }
 fi
 
@@ -224,11 +215,7 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     cp -r "$AGROBOT_SITE_PACKAGES/"* "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
     SITE_PACKAGES="1"
 } || {
-    ## Arch Linux
-    AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/site-packages/agrobot
-    mkdir -p "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
-    cp -r "$AGROBOT_SITE_PACKAGES/"* "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
-    SITE_PACKAGES="1"
+    SITE_PACKAGES="0"
 }
 
 ## setting ROS_IP and ROS_MASTER_URI
@@ -249,9 +236,6 @@ sudo cp "$LOCAL_FOLDER/service/attach.sh" $HOME
 #clear
 echo "------------------------------------------------------------------------"
 if [ "$UBUNTU_DEPENDENCIES" == "1" ] 
-    then
-        printf "${BLUE}Dependencies${NC}                       ${GREEN}OK${NC}\n"
-    elif [ "$ARCH_DEPENDENCIES" == "1" ]
     then
         printf "${BLUE}Dependencies${NC}                       ${GREEN}OK${NC}\n"
     else
