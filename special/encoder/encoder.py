@@ -11,6 +11,8 @@ from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
 import traceback
 from encoder_reader import read, set_pins
+import multiprocessing as mp
+from threading import Thread
 
 # Log class
 log: Log = Log("encoder.py")
@@ -31,6 +33,7 @@ def publish_encoder(value: str) -> None:
     global last_published_value
     if(int(value) != int(last_published_value)):
         pub.publish(value)
+        print(value)
         last_published_value = value
 
 def convertToDegrees(value: int) -> str:
@@ -44,7 +47,7 @@ def convertToDegrees(value: int) -> str:
     NewValue = (((value - -300) * NewRange) / OldRange) + 0
     return str(int(NewValue))
 
-if __name__ == '__main__':
+def main():
     try:
         set_pins(int(sys.argv[1]), int(sys.argv[2]))
         while not rospy.is_shutdown():
@@ -52,4 +55,11 @@ if __name__ == '__main__':
             publish_encoder(convertToDegrees(encoder)) # Publish encoder data to ROS
     except Exception as e:
         log.error(traceback.format_exc())
-        runtime_log.error("encoder.py terminated")
+        runtime_log.error(traceback.format_exc())
+
+if __name__ == "__main__":
+    try:
+        Thread(target=main).start()
+    except Exception as e:
+        print(traceback.format_exc())
+
