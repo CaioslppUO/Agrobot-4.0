@@ -146,13 +146,13 @@ def encoder_callback(value: String, encoder: int) -> None:
     """
     global ENCODER_1, ENCODER_2, ENCODER_3, ENCODER_4
     if(encoder == 1):
-        ENCODER_1 = value.data
+        ENCODER_1 = int(value.data)
     elif(encoder == 2):
-        ENCODER_2 = value.data
+        ENCODER_2 = int(value.data)
     elif(encoder == 3):
-        ENCODER_3 = value.data
+        ENCODER_3 = int(value.data)
     elif(encoder == 4):
-        ENCODER_4 = value.data
+        ENCODER_4 = int(value.data)
     else:
         raise Exception("Unknown encoder number")
 
