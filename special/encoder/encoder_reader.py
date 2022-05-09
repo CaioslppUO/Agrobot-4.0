@@ -9,6 +9,7 @@ from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
 import traceback
 
+
 # Log class
 log: Log = Log("encoder_reader.py")
 runtime_log: RuntimeLog = RuntimeLog("encoder_reader.py")
