@@ -49,6 +49,8 @@ def convertToDegrees(value: int) -> str:
 
 def main():
     try:
+        p = psutil.Process()
+        p.cpu_affinity([2])
         set_pins(int(sys.argv[1]), int(sys.argv[2]))
         while not rospy.is_shutdown():
             encoder = read() # Read data from encoder
