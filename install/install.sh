@@ -10,6 +10,21 @@ NC='\033[0m'
 # Install Control
 UBUNTU_DEPENDENCIES="0"
 SITE_PACKAGES="0"
+MASTER_INSTALL="0"
+
+echo "Master installation? (Y/n)"
+read master_install
+
+if [ ! -z "$master_install" ] && [ $master_install == "n" ] # Slave install
+    then
+        MASTER_INSTALL="0"
+        echo "Installing Slave Version!!"
+        sleep 3
+    else # Master install
+        MASTER_INSTALL="1"
+        echo "Installing Master Version!!"
+        sleep 3
+fi
 
 # Dependencies
 if [ ! -z "$1" ] && [ $1 == "--no-dependency" ] 
@@ -27,8 +42,6 @@ if [ ! -z "$1" ] && [ $1 == "--no-dependency" ]
         UBUNTU_DEPENDENCIES="0"
     }
 fi
-
-
 
 # Paths
 ## User
@@ -107,13 +120,16 @@ fi
     CONFIG="0"
 }
 
-{
-    ## Core scripts
-    cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/" &&
-    CORE="1"
-} || {
-    CORE="0"
-}
+if [ $MASTER_INSTALL == "1" ]
+    then
+    {
+        ## Core scripts
+        cd "$LOCAL_FOLDER/../core/" && chmod +x ./* &&  cp -r ./* "$AGROBOT_SRC/" &&
+        CORE="1"
+    } || {
+        CORE="0"
+    }
+fi
 
 {
     ## Services
@@ -135,13 +151,16 @@ fi
     MESSAGES="0"
 }
 
-{
-    ## Server for communication with app
-    cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT" &&
-    SERVER="1"
-} || {
-    SERVER="0"
-}
+if [ $MASTER_INSTALL == "1" ]
+    then
+    {
+        ## Server for communication with app
+        cd "$LOCAL_FOLDER/../" && cp -r server "$AGROBOT" &&
+        SERVER="1"
+    } || {
+        SERVER="0"
+    }
+fi
 
 {
     ## Modules
@@ -154,52 +173,82 @@ fi
     MODULES="0"
 }
 
-{
-    ## Specials
-    cd "$LOCAL_FOLDER/../special/" &&
-    chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
-    SPECIALS="1"
-} || {
-    SPECIALS="0"
-}
+if [ $MASTER_INSTALL == "0" ] # Install Slave modules
+    then
+        {
+            cd "$LOCAL_FOLDER/../special/" &&
+            chmod -R +x ./*/*.py && cp -r ./encoder ./relay ./control_direction "$AGROBOT/src/modules/" &&
+            SPECIALS="1"
+        } || {
+            SPECIALS="0"
+        }
+    else
+        {
+            ## Specials
+            cd "$LOCAL_FOLDER/../special/" &&
+            chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
+            SPECIALS="1"
+        } || {
+            SPECIALS="0"
+        }
+fi
 
-{
-    ## Simulations
-    cd "$LOCAL_FOLDER/../simulation/" &&
-    chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
-    SIMULATION="1"
-} || {
-    SIMULATION="0"
-}
+if [ $MASTER_INSTALL == "1" ]
+    then
+        {
+            ## Simulations
+            cd "$LOCAL_FOLDER/../simulation/" &&
+            chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
+            SIMULATION="1"
+        } || {
+            SIMULATION="0"
+        }
+fi
 
 ## Roslaunch
 cd $AGROBOT
 mkdir launch && cd launch
 echo "<launch>" > run.launch
-    echo "    <node pkg='agrobot' type='start_server.py' name='start_server' output='screen'/>" >> run.launch
 
-## Core files in roslaunch
-core_files=$(ls $LOCAL_FOLDER/../core)
-for core_entry in $core_files
-do
-    core_name=$(echo "$core_entry" | cut -f 1 -d '.')
-    echo "    <node pkg='agrobot' type='$core_entry' name='$core_name' output='screen'/>" >> run.launch
-done
+if [ $MASTER_INSTALL == "1" ] # Master roslaunch
+    then
+        echo "    <node pkg='agrobot' type='start_server.py' name='start_server' output='screen'/>" >> run.launch
 
-## Modules files in roslaunch
-modules_files=$(basename -a $(ls $LOCAL_FOLDER/../modules/*/*.py))
-for module_entry in $modules_files
-do
-    module_name=$(echo "$module_entry" | cut -f 1 -d '.')
-    echo "    <node pkg='agrobot' type='$module_entry' name='$module_name' output='screen'/>" >> run.launch
-done
+        ## Core files in roslaunch
+        core_files=$(ls $LOCAL_FOLDER/../core)
+        for core_entry in $core_files
+        do
+            core_name=$(echo "$core_entry" | cut -f 1 -d '.')
+            echo "    <node pkg='agrobot' type='$core_entry' name='$core_name' output='screen'/>" >> run.launch
+        done
 
-## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction' args='0' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1' args='7 13 encoder_1' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2' args='29 31 encoder_2' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='screen' />" >> run.launch
+        ## Modules files in roslaunch
+        modules_files=$(basename -a $(ls $LOCAL_FOLDER/../modules/*/*.py))
+        for module_entry in $modules_files
+        do
+            module_name=$(echo "$module_entry" | cut -f 1 -d '.')
+            echo "    <node pkg='agrobot' type='$module_entry' name='$module_name' output='screen'/>" >> run.launch
+        done
 
+        ## Special nodes in roslauch
+        echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_master' args='0' output='screen' />" >> run.launch
+        echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1_master' args='7 13 encoder_1' output='screen' />" >> run.launch
+        echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2_master' args='29 31 encoder_2' output='screen' />" >> run.launch
+        echo "    <node pkg='agrobot' type='relay.py' name='relay_master' args='40' output='screen' />" >> run.launch
+    else # Slave roslaunch
+        ## Modules files in roslaunch
+        modules_files=$(basename -a $(ls $LOCAL_FOLDER/../modules/*/*.py))
+        for module_entry in $modules_files
+        do
+            module_name=$(echo "$module_entry" | cut -f 1 -d '.')
+            echo "    <node pkg='agrobot' type='$module_entry' name='$module_name' output='screen'/>" >> run.launch
+        done
+
+        echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_slave' args='0' output='screen' />" >> run.launch
+        echo "    <node pkg='agrobot' type='encoder.py' name='encoder_3_slave' args='7 13 encoder_3' output='screen' />" >> run.launch
+        echo "    <node pkg='agrobot' type='encoder.py' name='encoder_4_slave' args='29 31 encoder_4' output='screen' />" >> run.launch
+        echo "    <node pkg='agrobot' type='relay.py' name='relay_slave' args='40' output='screen' />" >> run.launch
+fi
 
 echo "</launch>" >> run.launch
 
@@ -219,14 +268,26 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 }
 
 ## setting ROS_IP and ROS_MASTER_URI
-{
-    ipv4=$(hostname -I | awk '{print $1}') &&
-    echo "export ROS_MASTER_URI=http://$ipv4:11311" >> "$AGROBOT_ENV_BIN/activate" &&
-    echo "export ROS_IP=$ipv4" >> "$AGROBOT_ENV_BIN/activate" &&
-    ROS_IP_AND_MASTER_URI=1
-} || {
-    ROS_IP_AND_MASTER_URI=0
-}
+if [ $MASTER_INSTALL == "1" ] # Master
+    then
+        {
+            ipv4=$(hostname -I | awk '{print $1}') &&
+            echo "export ROS_MASTER_URI=http://$ipv4:11311" >> "$AGROBOT_ENV_BIN/activate" &&
+            echo "export ROS_IP=$ipv4" >> "$AGROBOT_ENV_BIN/activate" &&
+            ROS_IP_AND_MASTER_URI=1
+        } || {
+            ROS_IP_AND_MASTER_URI=0
+        }
+    else # Slave
+        {
+            ipv4=$(hostname -I | awk '{print $1}') &&
+            echo "export ROS_MASTER_URI=http://192.168.1.2:11311" >> "$AGROBOT_ENV_BIN/activate" &&
+            echo "export ROS_IP=$ipv4" >> "$AGROBOT_ENV_BIN/activate" &&
+            ROS_IP_AND_MASTER_URI=1
+        } || {
+            ROS_IP_AND_MASTER_URI=0
+        }
+fi
 
 ## Install service 
 sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
@@ -235,6 +296,12 @@ sudo cp "$LOCAL_FOLDER/service/attach.sh" $HOME
 
 #clear
 echo "------------------------------------------------------------------------"
+if [ "$MASTER_INSTALL" == "1" ] 
+    then
+        printf "${BLUE}Master Install${NC}                     ${GREEN}OK${NC}\n"
+    else
+        printf "${BLUE}Slave Install${NC}                      ${GREEN}OK${NC}\n"
+fi
 if [ "$UBUNTU_DEPENDENCIES" == "1" ] 
     then
         printf "${BLUE}Dependencies${NC}                       ${GREEN}OK${NC}\n"
@@ -259,7 +326,7 @@ if [ "$CONFIG" == "1" ]
     else
         printf "${BLUE}Configuration files${NC}                ${RED}NO${NC}\n"
 fi
-if [ "$CORE" == "1" ] 
+if [ "$CORE" == "1" ] && [ "$MASTER_INSTALL" == "1" ]
     then
         printf "${BLUE}Core modules${NC}                       ${GREEN}OK${NC}\n"
     else
@@ -289,7 +356,7 @@ if [ "$MESSAGES" == "1" ]
     else
         printf "${BLUE}Agrobot mervices${NC}                   ${RED}NO${NC}\n"
 fi
-if [ "$SERVER" == "1" ] 
+if [ "$SERVER" == "1" ] && [ "$MASTER_INSTALL" == "1" ]
     then
         printf "${BLUE}App server${NC}                         ${GREEN}OK${NC}\n"
     else
@@ -307,7 +374,7 @@ if [ "$ROS_IP_AND_MASTER_URI" == "1" ]
     else
         printf "${BLUE}Ros IP and Master Uri${NC}              ${RED}NO${NC}\n"
 fi
-if [ "$SIMULATION" == "1" ] 
+if [ "$SIMULATION" == "1" ] && [ "$MASTER_INSTALL" == "1" ]
     then
         printf "${BLUE}Simulations${NC}                        ${GREEN}OK${NC}\n"
     else
